@@ -38,7 +38,7 @@ class _ProfileState extends State<Profile> {
       myuser = customUser(mydata);
 
     });
-
+    print(myuser.photo_URL);
 
     return Stack(
           children: <Widget>[
@@ -65,13 +65,7 @@ class _ProfileState extends State<Profile> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: ClipOval(
-                                    child: Image.asset("assets/user.jpeg", fit: BoxFit.cover,),
-                                  )
-                              ),
+                              //CircleAvatar(child: Image.network(myuser.photo_URL),),
 
                               SizedBox(width: 16,),
                               Expanded(

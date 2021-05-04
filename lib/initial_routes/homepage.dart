@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/pages/search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,10 @@ import "package:cs310/UserHelper.dart";
 import "package:cs310/classes/customUser.dart";
 
 
+final usersRef = FirebaseFirestore.instance.collection('users');
 
 final FirebaseAuth myauth = FirebaseAuth.instance;
+
 customUser currentUser;
 
 
