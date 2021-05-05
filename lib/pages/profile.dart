@@ -1,45 +1,35 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/pages/edit_profile.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:cs310/UserHelper.dart';
 import "package:cs310/classes/customUser.dart";
 
-final User FirebaseUser = FirebaseAuth.instance.currentUser;
-customUser myuser;
+
+
+
 
 
 class Profile extends StatefulWidget {
+
+  customUser currentUser;
+  Profile({this.currentUser});
+
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
 
-  var mydata;
-
-
-  loadData() async{
-    mydata = await getuserById(Uid: FirebaseUser.uid);
-  }
-  @override
-  void initState() {
-    loadData();
-    myuser = customUser(mydata);
-    // TODO: implement initState
-    super.initState();
-  }
-
 
   @override
   Widget build(BuildContext context) {
 
-    //print(mydata);
-    setState(() {
-      myuser = customUser(mydata);
 
-    });
-    print(myuser.photo_URL);
-
+    print(widget.currentUser.photo_URL);
+    print(widget.currentUser.username);
+    print(widget.currentUser.userID);
+    print(widget.currentUser.bio);
     return Stack(
           children: <Widget>[
             SizedBox.expand(
@@ -65,14 +55,24 @@ class _ProfileState extends State<Profile> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              //CircleAvatar(child: Image.network(myuser.photo_URL),),
+                              Container(
+                                width: 50.0,
+                                height: 50.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: CachedNetworkImageProvider(widget.currentUser.photo_URL),
+                                    fit: BoxFit.cover),
+                                ),
+                              ),
+
 
                               SizedBox(width: 16,),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(myuser.username, style: TextStyle(color: Colors.grey[800], fontFamily: "Roboto",
+                                    Text(widget.currentUser.username, style: TextStyle(color: Colors.grey[800], fontFamily: "Roboto",
                                         fontSize: 16, fontWeight: FontWeight.w700
                                     ),),
 
@@ -104,7 +104,7 @@ class _ProfileState extends State<Profile> {
                                     children: <Widget>[
                                       Icon(Icons.check_box, color: Colors.black, size: 30,),
                                       SizedBox(width: 4,),
-                                      Text(myuser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                      Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                           fontFamily: "Roboto", fontSize: 24
                                       ),)
                                     ],
@@ -123,7 +123,7 @@ class _ProfileState extends State<Profile> {
                                     children: <Widget>[
                                       Icon(Icons.favorite, color: Colors.black, size: 30,),
                                       SizedBox(width: 4,),
-                                      Text(myuser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                      Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                           fontFamily: "Roboto", fontSize: 24
                                       ),)
                                     ],
@@ -142,7 +142,7 @@ class _ProfileState extends State<Profile> {
                                     children: <Widget>[
 
                                       SizedBox(width: 4,),
-                                      Text(myuser.rate.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                      Text(widget.currentUser.rate.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                           fontFamily: "Roboto", fontSize: 24
                                       ),)
                                     ],
@@ -170,7 +170,7 @@ class _ProfileState extends State<Profile> {
 
                               SizedBox(height: 8,),
                               Text(
-                                  myuser.bio.toString(),
+                                  widget.currentUser.bio.toString(),
                                 style: TextStyle(fontFamily: "Roboto", fontSize: 15),
                               ),
 

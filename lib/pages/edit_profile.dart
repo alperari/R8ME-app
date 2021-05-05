@@ -2,11 +2,11 @@ import 'package:cs310/UserHelper.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/pages/settings.dart';
 import 'package:flutter/material.dart';
-import "package:cs310/pages/profile.dart";
-
+import "package:cs310/initial_routes/homepage.dart";
 
 
 class EditProfile extends StatefulWidget {
+
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -15,14 +15,14 @@ class _EditProfileState extends State<EditProfile> {
 
 
   Map<String,dynamic> newData = {
-    "userID": myuser.userID,
-    "username": myuser.username,
-    "email": myuser.email,
-    "photoURL": myuser.photo_URL,
-    "bio": myuser.bio,
-    "followings": myuser.followings_count,
-    "followers": myuser.followers_count,
-    "rate": myuser.rate,
+    "userID": currentUser.userID,
+    "username": currentUser.username,
+    "email": currentUser.email,
+    "photoURL": currentUser.photo_URL,
+    "bio": currentUser.bio,
+    "followings": currentUser.followings_count,
+    "followers": currentUser.followers_count,
+    "rate": currentUser.rate,
   };
 
   final TextEditingController _usernameController = TextEditingController();
@@ -152,7 +152,7 @@ class _EditProfileState extends State<EditProfile> {
                   print(5);
 
                   if (value.isEmpty) {
-                    newData["username"] = myuser.username;
+                    newData["username"] = currentUser.username;
                     print(1);
                   }
                   //_username = value;
@@ -256,7 +256,7 @@ class _EditProfileState extends State<EditProfile> {
 
                   RaisedButton(
                     onPressed:  (){
-                      updateUserById(Uid: myuser.userID, data: newData);
+                      updateUserById(Uid: currentUser.userID, data: newData);
                       print(3);
                     },
                     color: Colors.greenAccent,

@@ -20,7 +20,7 @@ class customUser
     this.userID = mymap==null ? "" : mymap["userID"];
     this.username = mymap==null ? "" : mymap["username"];
     this.email = mymap==null ? "" : mymap["email"];
-    this.photo_URL = mymap==null ? "" : mymap["photo_URL"];
+    this.photo_URL = mymap==null ? "" : mymap["photoURL"];
     this.bio = mymap==null ? "" : mymap["bio"];
 
     this.followers_count = mymap==null ? 0 : mymap["followers"];

@@ -108,7 +108,6 @@ class LoginScreenState extends State<LoginScreen> {
 
                       //wait to fetch user data then go to homepage..
 
-
                       Navigator.pushNamed(context, "/homepage");
                     }
                   },

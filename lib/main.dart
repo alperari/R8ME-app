@@ -26,7 +26,7 @@ void main()async {
       "/welcomescreen": (context) => WelcomeScreen(),
       "/loginscreen": (context) => LoginScreen(),
       "/registerscreen": (context) => RegisterScreen(),
-      "/homepage": (context) => MyHomePage(),
+      "/homepage": (context) => HomePage(myauth.currentUser.uid),
 
 
     },

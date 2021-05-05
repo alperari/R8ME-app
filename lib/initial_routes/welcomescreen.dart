@@ -20,7 +20,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if(myauth.currentUser != null)
       {
         print("ALREADY SIGNED IN!");
-        return MyHomePage();
+        return HomePage(myauth.currentUser.uid);
       }
     else
       {
