@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/pages/edit_profile.dart";
 import "package:firebase_auth/firebase_auth.dart";
@@ -26,10 +27,6 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
 
 
-    print(widget.currentUser.photo_URL);
-    print(widget.currentUser.username);
-    print(widget.currentUser.userID);
-    print(widget.currentUser.bio);
     return Stack(
           children: <Widget>[
             SizedBox.expand(
@@ -43,8 +40,19 @@ class _ProfileState extends State<Profile> {
                 return SingleChildScrollView(
                   controller: scrollController,
                   child: Container(
+
+                    decoration: BoxDecoration(
+
+                        border: Border.all(),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        )
+                    ),
+
                     constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-                    color: Colors.white,
+                    //color: Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -79,14 +87,43 @@ class _ProfileState extends State<Profile> {
                                   ],
                                 ),
                               ),
-                              FlatButton.icon(
-                                  onPressed: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile()));
-                                  },
-                                  icon: Icon(Icons.edit),label:Text("Edit"))
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(
+                                    width: 1
+                                  )
+                                ),
+                                child: FlatButton.icon(
+                                    onPressed: (){
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => EditProfile(currentUser: widget.currentUser)));
+                                      },
+                                    icon: Icon(Icons.edit),label:Text("Edit")),
+                              )
                             ],
                           ),
                         ),
+                        SizedBox(height: 16,),
+                        //Container for clients
+                        Container(
+                          padding: EdgeInsets.only(left: 32, right: 32),
+                          child: Column(
+                            children: <Widget>[
+
+                              Text(
+                                widget.currentUser.bio.toString(),
+                                style: TextStyle(fontFamily: "Roboto", fontSize: 15),
+                              ),
+
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: 16,),
+                        //Container for clients
 
 
 
@@ -160,26 +197,6 @@ class _ProfileState extends State<Profile> {
                         SizedBox(height: 16,),
                         //container for about me
 
-                        Container(
-                          padding: EdgeInsets.only(left: 32, right: 32),
-                          child: Column(
-                            children: <Widget>[
-                              Text("Bio", style: TextStyle(color: Colors.grey[800], fontWeight: FontWeight.w700,
-                                  fontFamily: "Roboto", fontSize: 18
-                              ),),
-
-                              SizedBox(height: 8,),
-                              Text(
-                                  widget.currentUser.bio.toString(),
-                                style: TextStyle(fontFamily: "Roboto", fontSize: 15),
-                              ),
-
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 16,),
-                        //Container for clients
 
                         Container(
                           padding: EdgeInsets.only(left: 32, right: 32),

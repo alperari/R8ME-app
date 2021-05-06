@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import "package:cs310/initial_routes/homepage.dart";
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 
-final CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
 
 void createUser(User myuser) {
   usersRef.doc(myuser.uid.toString()).set(
@@ -28,7 +28,7 @@ Future<Map<String,dynamic>> getuserById({String Uid}) async {
 }
 
 
-updateUserById({String Uid, Map<String,dynamic> data}) async {
+void updateUserById({String Uid, Map<String,dynamic> data}) async {
   final mydoc = await usersRef.doc(Uid).get();
   if (mydoc.exists) {
     mydoc.reference.update(

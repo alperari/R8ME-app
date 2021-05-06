@@ -4,7 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import "package:cs310/classes/customUser.dart";
-//import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as im;
@@ -31,6 +32,8 @@ class _UploadState extends State<Upload>
   File myfile;
   bool uploadingProgress = false;
   String postID = Uuid().v4();
+
+
 
   void showCustomDialog(BuildContext context) => showDialog(
     context: context,
@@ -287,42 +290,102 @@ class _UploadState extends State<Upload>
             ),
           ),
           Divider(),
+
           Container(
-            padding: EdgeInsets.symmetric(vertical:0, horizontal: 8),
-            child: TextField(
-              controller: locationController,
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                    Icons.location_pin,
-                    size :40,
-                    color :Colors.grey),
-                suffixIcon: ElevatedButton.icon(onPressed: (){}, style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.fromLTRB(5, 0,0 , 0),
-                  primary: Colors.green[700],
-                  onPrimary: Colors.white, ),icon: Icon(Icons.my_location,  size :30, color :Colors.white), label: Text("")),
-                hintText: "Add Location?",
-                border: InputBorder.none,
-              ),
+            padding: EdgeInsets.symmetric(horizontal: 12,vertical:0),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: TextField(
+                    controller: locationController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                          Icons.location_pin,
+                          size :40,
+                          color :Colors.grey),
+                      //suffixIcon:
+                      hintText: "Add Location?",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Ink(
+                    decoration: const ShapeDecoration(
+                      color: Colors.green,
+                      shape: CircleBorder(
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.my_location),
+                      iconSize: 30,
+                      color: Colors.white,
+                      onPressed: () async {
+                        getCurrentLocation();
+                      },
+                    ),
+                  ),
+                ),
+
+              ],
             ),
           ),
 
+
+          
         ],
       ),
     );
   }
-  //
-  // getUserLocation() async {
-  //   Position position = await Geolocator()
-  //       .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //   List<Placemark> placemarks = await Geolocator()
-  //       .placemarkFromCoordinates(position.latitude, position.longitude);
-  //   Placemark placemark = placemarks[0];
-  //   String completeAddress =
-  //       '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
-  //   print(completeAddress);
-  //   String formattedAddress = "${placemark.locality}, ${placemark.country}";
-  //   locationController.text = formattedAddress;
-  // }
+
+  getCurrentLocation() async {
+
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+
+
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+
+    Placemark placemark = placemarks[0];
+    String completeAddress =
+        '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+
+    print(completeAddress);
+    String formattedAddress = "${placemark.locality}, ${placemark.country}";
+    locationController.text = formattedAddress;
+  }
 
   bool get wantKeepAlive => true;
 
