@@ -104,7 +104,6 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Colors.grey,
 
       body: PageView(
         children: <Widget>[
@@ -122,15 +121,15 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
 
       bottomNavigationBar: CupertinoTabBar(
         iconSize: 40,
-        backgroundColor: Colors.white.withAlpha(0),
+        backgroundColor: Colors.transparent,
         currentIndex: pageIndex,
         onTap: navigationTap,
-        activeColor: Colors.black,
-        inactiveColor: Colors.white,
+        activeColor: Colors.deepPurple,
+        inactiveColor: Colors.grey,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.person)),
           BottomNavigationBarItem(icon: Icon(Icons.home)),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle)),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle,size: 45)),
           BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_rounded)),
           BottomNavigationBarItem(icon: Icon(Icons.search_rounded))
 

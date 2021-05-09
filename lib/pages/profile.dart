@@ -26,6 +26,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
+  String postView_style = "grid";
   bool isLoading = false;
   int postCount = 0;
   List<Post> posts = [];
@@ -52,10 +53,34 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  Container buildNoContent(){
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    return Container(
+      child: Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            Image.asset(
+              'assets/nocontent.jpg',
+            ),
 
-  bool grid = true;
+            SizedBox(height: 20,)
+          ],
+        ),
+      ),
+    );
+  }
+
+
   Widget buildProfilePosts(){
-    if(grid) {
+    if(posts.isEmpty){
+      return buildNoContent();
+    }
+
+    else if(isLoading == true)
+      return CircularProgressIndicator();
+
+    else if(postView_style == "grid") {
       List<GridTile> post_tiles=[];
 
       posts.forEach((post) {
@@ -63,8 +88,8 @@ class _ProfileState extends State<Profile> {
       });
 
       return GridView.count(
-        crossAxisCount: 3,
-        childAspectRatio: 1,
+        crossAxisCount: 2,
+        childAspectRatio: 0.75,
         mainAxisSpacing: 1.5,
         crossAxisSpacing: 1.5,
         shrinkWrap: true,
@@ -72,14 +97,44 @@ class _ProfileState extends State<Profile> {
         children: post_tiles,
       );
     }
-    if(isLoading == true)
-      return CircularProgressIndicator();
-    else{
+
+    else if(postView_style == "list"){
       return Column(children: posts,);
     }
   }
 
 
+  build_grid_or_scrollable_button(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        IconButton(
+          onPressed: () {
+            setState(() {
+              postView_style = "grid";
+            });
+          },
+          icon: Icon(Icons.grid_on_rounded),
+          iconSize: 32,
+          color: postView_style == 'grid'
+              ? Colors.deepPurple
+              : Colors.grey,
+        ),
+        IconButton(
+          onPressed: (){
+            setState(() {
+              postView_style = "list";
+            });
+          },
+          icon: Icon(Icons.list),
+          iconSize: 32,
+          color: postView_style == 'list'
+              ? Colors.deepPurple
+              : Colors.grey,
+        ),
+      ],
+    );
+  }
 
 
   @override
@@ -280,14 +335,11 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
 
-                        SizedBox(height: 16,),
-                        //container for about me
-
-
-                        //Container for reviews
-
+                       //Posts will be displayed here
+                        Divider(thickness: 3,),
+                        build_grid_or_scrollable_button(),
+                        Divider(thickness: 3,),
                         buildProfilePosts(),
-
                       ],
                     ),
 

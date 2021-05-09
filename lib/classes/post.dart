@@ -99,6 +99,17 @@ class Post extends StatefulWidget {
     });
     return counter;
   }
+  double calculateRate(likeCount, dislikeCount){
+    if(likeCount == 0){
+      return 0.0;
+    }
+    else if(likeCount != 0 && dislikeCount == 0){
+      return likeCount.toDouble();
+    }
+    else if(likeCount != 0 && dislikeCount != 0){
+      return likeCount/(dislikeCount+likeCount);
+    }
+  }
 
   @override
   _PostState createState() => _PostState(
@@ -116,12 +127,17 @@ class Post extends StatefulWidget {
       likeCount: getLikeCount(this.liked_users),
       dislikeCount: getDislikeCount(this.disliked_users),
 
-      rate : likeCount/dislikeCount
+      rate : calculateRate(this.likeCount, this.dislikeCount)
 
   );
 }
 
+
+
 class _PostState extends State<Post> {
+  final customUser currentUserOnPage = currentUser;
+  bool fillHeart = false;
+  bool fillThumb = false;
 
   final String postID;
   final String ownerID;
@@ -158,6 +174,17 @@ class _PostState extends State<Post> {
     this.rate,
   });
 
+  double calculateRate(int likeCount, int dislikeCount){
+    if(likeCount == 0){
+      return 0.0;
+    }
+    else if(likeCount != 0 && dislikeCount == 0){
+      return likeCount.toDouble();
+    }
+    else if(likeCount != 0 && dislikeCount != 0){
+      return likeCount/(dislikeCount+likeCount);
+    }
+  }
 
   buildPostHeader() {
     return FutureBuilder(
@@ -219,45 +246,76 @@ class _PostState extends State<Post> {
     return Column(
       children: <Widget>[
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            SizedBox(width:15,),
-            IconButton(
-              icon: Icon(Icons.favorite_rounded),
-              iconSize: 30,
-              color: Colors.grey[700],
-              onPressed: (){
-                print("tapped on like!");
-              },
-            ),
-            Container(
-              child: Text(
-                "$likeCount",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.favorite_rounded),
+                  iconSize: 30,
+                  color: fillHeart ? Colors.red : Colors.grey[700],
+                  onPressed: (){
+                    print("tapped on like!");
+                    Like();
+                  },
                 ),
-              ),
-            ),
-            SizedBox(width: 20,),
-            IconButton(
-              icon: Icon(Icons.thumb_down_rounded),
-              iconSize: 30,
-              color: Colors.grey[700],
-              onPressed: (){
-                print("tapped on dislike!");
-              },
-            ),
-            Container(
-              child: Text(
-                "$dislikeCount",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                Container(
+                  child: Text(
+                    "$likeCount",
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-            SizedBox(width: 25,),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.thumb_down_rounded),
+                  iconSize: 30,
+                  color: fillThumb==true ? Colors.blueAccent : Colors.grey[700] ,
+                  onPressed: (){
+                    print("tapped on dislike!");
+                    Dislike();
+                  },
+                ),
+                Container(
+                  child: Text(
+                    "$dislikeCount",
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+             Row(
+               children: [
+                 IconButton(
+                   icon: Icon(Icons.trending_up_rounded),
+                   iconSize: 34,
+                   color: Colors.grey[700],
+                   onPressed: (){
+                     print("tapped on dislike!");
+                   },
+                 ),
+                 Container(
+                   child: Text(
+                     "${rate * 100}",
+                     style: TextStyle(
+                       fontSize: 30,
+                       color: Colors.black,
+                       fontWeight: FontWeight.bold,
+                     ),
+                   ),
+                 ),
+               ],
+             ),
             IconButton(
               icon: Icon(Icons.chat_rounded),
               iconSize: 30,
@@ -266,8 +324,7 @@ class _PostState extends State<Post> {
                 print("tapped on comment!");
               },
             ),
-            SizedBox(width: 25,),
-            Text(time.substring(0, time.indexOf(" "))),
+
           ],
         ),
         Row(
@@ -293,11 +350,124 @@ class _PostState extends State<Post> {
   }
 
 
+  void Like(){
+    bool _alreadyLiked = liked_users[currentUserOnPage.userID] == true ? true : false;
+
+    //if liked person taps button, bring the like back
+    if(_alreadyLiked == true){
+
+
+      setState(() {
+        likeCount--;
+        fillHeart = false;
+        liked_users[currentUserOnPage.userID] = false;
+        rate = calculateRate(likeCount, dislikeCount);
+      });
+
+      //now update in the database
+      postsRef
+          .doc(ownerID)
+          .collection("user_posts")
+          .doc(postID)
+      .update({
+        "liked_users.${currentUserOnPage.userID}" : false,
+        "likeCount" : likeCount,
+        "dislikeCount" : dislikeCount,
+        "rate" : calculateRate(likeCount, dislikeCount)
+
+      });
+
+    }
+
+    //if it is not liked, then like on tap
+    else if(_alreadyLiked == false){
+
+      setState(() {
+        likeCount++;
+        fillHeart = true;
+        liked_users[currentUserOnPage.userID] = true;
+        rate = calculateRate(likeCount, dislikeCount);
+
+      //now update in the database
+      postsRef
+          .doc(ownerID)
+          .collection("user_posts")
+          .doc(postID)
+          .update({
+            "liked_users.${currentUserOnPage.userID}" : true,
+            "likeCount" : likeCount,
+            "dislikeCount" : dislikeCount,
+            "rate" : calculateRate(likeCount, dislikeCount)
+
+          });
+
+      });
+    }
+  }
+  void Dislike(){
+    bool _alreadyDisliked = disliked_users[currentUserOnPage.userID] == true ? true : false;
+
+    //if liked person taps button, bring the like back
+    if(_alreadyDisliked == true){
+
+
+      setState(() {
+        dislikeCount--;
+        fillThumb = false;
+        disliked_users[currentUserOnPage.userID] = false;
+        rate = calculateRate(likeCount, dislikeCount);
+      });
+
+      //now update in the database
+      postsRef
+          .doc(ownerID)
+          .collection("user_posts")
+          .doc(postID)
+          .update({
+        "disliked_users.${currentUserOnPage.userID}" : false,
+        "likeCount" : likeCount,
+        "dislikeCount" : dislikeCount,
+        "rate" : calculateRate(likeCount, dislikeCount)
+
+      });
+
+    }
+
+    //if it is not liked, then like on tap
+    else if(_alreadyDisliked == false){
+
+      setState(() {
+        dislikeCount++;
+        fillThumb = true;
+        disliked_users[currentUserOnPage.userID] = true;
+        rate = calculateRate(likeCount, dislikeCount);
+
+        //now update in the database
+        postsRef
+            .doc(ownerID)
+            .collection("user_posts")
+            .doc(postID)
+            .update({
+          "disliked_users.${currentUserOnPage.userID}" : true,
+          "likeCount" : likeCount,
+          "dislikeCount" : dislikeCount,
+          "rate" : calculateRate(likeCount, dislikeCount)
+
+        });
+
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    fillHeart = liked_users[currentUserOnPage.userID] == true;
+    fillThumb = disliked_users[currentUserOnPage.userID] == true;
+
     return Column(
       children: <Widget>[
-        //buildPostHeader(),
+        buildPostHeader(),
         Divider(height: 5,),
         buildPostImage(),
         Divider(height: 5,),
