@@ -1,4 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cs310/classes/post.dart';
+import 'package:cs310/classes/postTile.dart';
+import 'package:cs310/initial_routes/homepage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/pages/edit_profile.dart";
@@ -21,6 +25,69 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+
+  bool isLoading = false;
+  int postCount = 0;
+  List<Post> posts = [];
+
+  getProfilePosts() async{
+    setState(() {
+      isLoading=true;
+    });
+
+    print(2);
+
+    QuerySnapshot snapshot = await postsRef
+        .doc(widget.currentUser.userID)
+        .collection("user_posts")
+        .orderBy("time",descending: true)
+        .get();
+    setState(() {
+      isLoading = false;
+      print(1);
+      postCount = snapshot.docs.length;
+      posts = snapshot.docs.map((e) => Post.createPostFromDoc(e)).toList();
+      print(3);
+
+    });
+  }
+
+
+  bool grid = true;
+  Widget buildProfilePosts(){
+    if(grid) {
+      List<GridTile> post_tiles=[];
+
+      posts.forEach((post) {
+        post_tiles.add(GridTile(child: PostTile(post:post)));
+      });
+
+      return GridView.count(
+        crossAxisCount: 3,
+        childAspectRatio: 1,
+        mainAxisSpacing: 1.5,
+        crossAxisSpacing: 1.5,
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: post_tiles,
+      );
+    }
+    if(isLoading == true)
+      return CircularProgressIndicator();
+    else{
+      return Column(children: posts,);
+    }
+  }
+
+
+
+
+  @override
+    void initState() {
+      // TODO: implement initState
+      super.initState();
+      getProfilePosts();
+  }
 
 
   @override
@@ -139,6 +206,25 @@ class _ProfileState extends State<Profile> {
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
+                                      Icon(Icons.image, color: Colors.black, size: 30,),
+                                      SizedBox(width: 4,),
+                                      Text(postCount.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                          fontFamily: "Roboto", fontSize: 24
+                                      ),)
+                                    ],
+                                  ),
+
+                                  Text("Posts", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                      fontFamily: "Roboto", fontSize: 15
+                                  ),)
+                                ],
+                              ),
+
+                              Column(
+                                children: <Widget>[
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
                                       Icon(Icons.check_box, color: Colors.black, size: 30,),
                                       SizedBox(width: 4,),
                                       Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
@@ -198,74 +284,9 @@ class _ProfileState extends State<Profile> {
                         //container for about me
 
 
-                        Container(
-                          padding: EdgeInsets.only(left: 32, right: 32),
-                          child: Column(
-                            children: <Widget>[
-                              Text("comments:", style: TextStyle(color: Colors.grey[800], fontWeight: FontWeight.w700,
-                                  fontFamily: "Roboto", fontSize: 18
-                              ),),
-
-                              SizedBox(height: 8,),
-                              //for list of clients
-
-
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 16,),
-
                         //Container for reviews
 
-                        Container(
-                          padding: EdgeInsets.only(left: 32, right: 32),
-                          child: Column(
-                            children: <Widget>[
-
-
-
-                              Container(
-                                width: MediaQuery.of(context).size.width-64,
-                                child: ListView.builder(
-                                  itemBuilder: (context, index) {
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Text("Post $index", style: TextStyle(color: Colors.greenAccent, fontSize: 18, fontFamily: "Roboto",
-                                                fontWeight: FontWeight.w700
-                                            )),
-
-                                            Row(
-                                              children: <Widget>[
-                                                Icon(Icons.star, color: Colors.orangeAccent,),
-                                                Icon(Icons.star, color: Colors.orangeAccent,),
-                                                Icon(Icons.star, color: Colors.orangeAccent,),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 8,),
-
-                                        Text("Bariş hoca give us 100 ", style: TextStyle(color: Colors.grey[800], fontSize: 14, fontFamily: "Roboto",
-                                            fontWeight: FontWeight.w400
-                                        )),
-                                        SizedBox(height: 16,),
-                                      ],
-                                    );
-                                  },
-                                  itemCount: 8,
-                                  shrinkWrap: true,
-                                  controller: ScrollController(keepScrollOffset: false),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-
+                        buildProfilePosts(),
 
                       ],
                     ),

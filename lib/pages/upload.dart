@@ -200,8 +200,15 @@ class _UploadState extends State<Upload>
       "mediaURL": mediaUrl,
       "description": description,
       "location": location,
-      //"timestamp": timestamp,
-      //"likes": {},
+      "time": currentTime,
+
+      "liked_users": {},
+      "disliked_users": {},
+
+      "likeCount" : 0,
+      "dislikeCount" : 0,
+
+      "rate" : 0.0
     });
 
 

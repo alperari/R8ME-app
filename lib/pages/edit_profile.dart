@@ -274,6 +274,9 @@ class _EditProfileState extends State<EditProfile> {
                         if (_formKey.currentState.validate()) {
                           await updateUserById(Uid: widget.currentUser.userID, data:  newData);
 
+                          SnackBar snackbar = SnackBar(
+                            content: Text("Successfully Updated!"),);
+                          ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
                           Navigator.pushReplacement(
                               context,

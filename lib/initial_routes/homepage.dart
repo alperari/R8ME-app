@@ -19,6 +19,8 @@ final storageRef = FirebaseStorage.instance.ref();
 
 final FirebaseAuth myauth = FirebaseAuth.instance;
 
+final String currentTime = DateTime.now().toString();
+
 customUser currentUser;
 
 
