@@ -7,19 +7,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/upload.dart';
 import 'package:cs310/pages/timeline.dart';
-import 'package:cs310/pages/chat.dart';
-import 'package:cs310/pages/settings.dart';
-import "package:cs310/UserHelper.dart";
+import 'package:cs310/pages/activity_feed.dart';
+
 import "package:cs310/classes/customUser.dart";
 
 final FirebaseUser = FirebaseAuth.instance.currentUser;
 final usersRef = FirebaseFirestore.instance.collection("users");
 final postsRef = FirebaseFirestore.instance.collection("posts");
 final storageRef = FirebaseStorage.instance.ref();
+final commentsRef = FirebaseFirestore.instance.collection("posts_comments");
+
+final activityFeedRef = FirebaseFirestore.instance.collection("feeds");
 
 final FirebaseAuth myauth = FirebaseAuth.instance;
 
-final String currentTime = DateTime.now().toString();
 
 customUser currentUser;
 
@@ -110,7 +111,7 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
           Profile(currentUser: currentUser,),
           Timeline(),
           Upload(currentUser: currentUser,),
-          Chat(),
+          ActivityFeed(),
           Search(),
         ],
         controller: pageController,
@@ -120,7 +121,7 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
       ),
 
       bottomNavigationBar: CupertinoTabBar(
-        iconSize: 40,
+        iconSize: 34,
         backgroundColor: Colors.transparent,
         currentIndex: pageIndex,
         onTap: navigationTap,
@@ -130,7 +131,7 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
           BottomNavigationBarItem(icon: Icon(Icons.person)),
           BottomNavigationBarItem(icon: Icon(Icons.home)),
           BottomNavigationBarItem(icon: Icon(Icons.add_circle,size: 45)),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_rounded)),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications_active_rounded)),
           BottomNavigationBarItem(icon: Icon(Icons.search_rounded))
 
         ],

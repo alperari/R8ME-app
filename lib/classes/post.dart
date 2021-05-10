@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
+import 'package:cs310/pages/commentsScreen.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:photo_view/photo_view.dart';
 
 
-CachedNetworkImage cachedNetworkImage_custom(mediaUrl) {
+CachedNetworkImage cachedNetworkImage_custom(mediaURL) {
   return CachedNetworkImage(
-    imageUrl: mediaUrl,
+    imageUrl: mediaURL,
     fit: BoxFit.cover,
     placeholder: (context, url) => Padding(
       child: CircularProgressIndicator(),
@@ -27,7 +28,7 @@ class Post extends StatefulWidget {
   final String mediaURL;
   final String description;
   final String location;
-  final String time;
+  final Timestamp time;
 
   final dynamic liked_users;
   final dynamic disliked_users;
@@ -145,7 +146,7 @@ class _PostState extends State<Post> {
   final String mediaURL;
   final String description;
   final String location;
-  final String time;
+  final Timestamp time;
 
   Map liked_users;
   Map disliked_users;
@@ -186,6 +187,17 @@ class _PostState extends State<Post> {
     }
   }
 
+  void GoToComments(BuildContext context, {String postID, String ownerID, String mediaURL}){
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return CommentsScreen(
+        postID: postID,
+        ownerID: ownerID,
+        mediaURL: mediaURL,
+      );
+    }));
+  }
+
+
   buildPostHeader() {
     return FutureBuilder(
       future: usersRef.doc(ownerID).get(),
@@ -218,8 +230,6 @@ class _PostState extends State<Post> {
       },
     );
   }
-
-
   buildPostImage() {
     return GestureDetector(
       onDoubleTap: () => print("Liked post!"),
@@ -241,7 +251,6 @@ class _PostState extends State<Post> {
       ),
     );
   }
-
   buildPostFooter() {
     return Column(
       children: <Widget>[
@@ -321,6 +330,12 @@ class _PostState extends State<Post> {
               iconSize: 30,
               color: Colors.grey[700],
               onPressed: (){
+                GoToComments(
+                  context,
+                  postID: postID,
+                  ownerID: ownerID,
+                  mediaURL: mediaURL
+                );
                 print("tapped on comment!");
               },
             ),
@@ -376,7 +391,7 @@ class _PostState extends State<Post> {
         "rate" : calculateRate(likeCount, dislikeCount)
 
       });
-
+      removeLikeFromActivityFeed();
     }
 
     //if it is not liked, then like on tap
@@ -402,6 +417,7 @@ class _PostState extends State<Post> {
           });
 
       });
+      addLikeToActivityFeed();
     }
   }
   void Dislike(){
@@ -459,6 +475,40 @@ class _PostState extends State<Post> {
     }
   }
 
+  addLikeToActivityFeed() {
+    // add a notification to the postOwner's activity feed only if comment made by OTHER user (to avoid getting notification for our own like)
+    bool isNotPostOwner = true;//currentUserOnPage.userID != ownerID;
+    if (isNotPostOwner) {
+      activityFeedRef
+          .doc(ownerID)
+          .collection("feedItems")
+          .add({
+        "type": "like",
+        "username": currentUser.username,
+        "userId": currentUser.userID,
+        "photo_URL": currentUser.photo_URL,
+        "postId": postID,
+        "mediaURL": mediaURL,
+        "time": DateTime.now(),
+      });
+    }
+  }
+
+  removeLikeFromActivityFeed() {
+    bool isNotPostOwner = true;//currentUserOnPage.userID != ownerID;
+    if (isNotPostOwner) {
+      activityFeedRef
+          .doc(ownerID)
+          .collection("feedItems")
+          .doc(postID)
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -125,20 +125,15 @@ class UserResult extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(8),
-      color: Colors.greenAccent,
+      color: Colors.greenAccent[100],
       child: Column(
         children: <Widget>[
           GestureDetector(
             onTap: () {},  //showProfile(context, profileId: user.id),
             child: ListTile(
               leading: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.black,
-                child: CircleAvatar(
                   backgroundImage: NetworkImage(user.photo_URL),
                   radius: 25
-                ),
-
               ),
               title: Text(
                 user.username,

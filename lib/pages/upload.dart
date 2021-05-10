@@ -200,7 +200,7 @@ class _UploadState extends State<Upload>
       "mediaURL": mediaUrl,
       "description": description,
       "location": location,
-      "time": currentTime,
+      "time": DateTime.now(),
 
       "liked_users": {},
       "disliked_users": {},

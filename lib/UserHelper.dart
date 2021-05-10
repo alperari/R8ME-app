@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:cs310/initial_routes/homepage.dart";
-import 'package:device_info/device_info.dart';
-import 'package:package_info/package_info.dart';
 
 
 void createUser(User myuser) {

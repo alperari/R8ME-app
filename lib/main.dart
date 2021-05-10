@@ -18,6 +18,7 @@ void main()async {
   var initial="";
   initial = myauth.currentUser!=null ? "/homepage" : "/walkthrough";
 
+
   runApp(MaterialApp(
 
     initialRoute: initial,
