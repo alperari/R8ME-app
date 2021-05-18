@@ -1,10 +1,18 @@
 import "package:cs310/initial_routes/homepage.dart";
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 
 
 
 class WelcomeScreen extends StatefulWidget {
+
+  const WelcomeScreen({Key key, this.analytics, this.observer}): super(key: key);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -20,7 +28,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if(myauth.currentUser != null)
       {
         print("ALREADY SIGNED IN!");
-        return HomePage(myauth.currentUser.uid);
+        return HomePage(documentId: myauth.currentUser.uid, analytics: widget.analytics, observer: widget.observer);
       }
     else
       {

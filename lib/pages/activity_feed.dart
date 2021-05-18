@@ -12,7 +12,7 @@ class ActivityFeed extends StatefulWidget {
 class _ActivityFeedState extends State<ActivityFeed> {
   final customUser currentUserOnPage = currentUser;
 
-  ReturnActivityFeedItems() async{
+  Future<List<ActivitiFeed_Item>> ReturnActivityFeedItems() async{
 
     QuerySnapshot snapshot = await activityFeedRef
         .doc(currentUserOnPage.userID)

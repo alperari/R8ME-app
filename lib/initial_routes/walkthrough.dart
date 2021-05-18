@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/classes/styles.dart";
 import "package:cs310/classes/colors.dart";
@@ -7,12 +9,17 @@ import "package:cs310/classes/colors.dart";
 
 
 class Walkthrough extends StatefulWidget {
+
+   Walkthrough({this.analytics, this.observer});
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
   @override
   _WalkthroughState createState() => _WalkthroughState();
 }
 
 class _WalkthroughState extends State {
-
   int current_page = 1;
   int page_count= 4;
   List<String> AppBarTitles= [
@@ -47,6 +54,7 @@ class _WalkthroughState extends State {
 
   @override
   void initState() {
+
     // TODO: implement initState
     super.initState();
 
@@ -79,10 +87,14 @@ class _WalkthroughState extends State {
       }
     }
     );
+
   }
+
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppBarTitles[current_page-1],

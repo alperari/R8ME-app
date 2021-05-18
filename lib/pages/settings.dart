@@ -113,11 +113,9 @@ class _SettingsState extends State<Settings> {
                     return;
                   }
                   await _auth.signOut();
+
                   Navigator.pushNamed(context, "/welcomescreen");
-                  final String uid = user.uid;
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text(uid + ' has successfully signed out.'),
-                  ));
+
                 },
               ),
             )

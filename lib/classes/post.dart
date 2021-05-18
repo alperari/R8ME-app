@@ -6,7 +6,7 @@ import 'package:cs310/pages/commentsScreen.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:photo_view/photo_view.dart';
-
+import "package:timeago/timeago.dart" as timeago;
 
 CachedNetworkImage cachedNetworkImage_custom(mediaURL) {
   return CachedNetworkImage(
@@ -57,7 +57,7 @@ class Post extends StatefulWidget {
     this.rate,
   });
 
-  factory Post.createPostFromDoc(QueryDocumentSnapshot doc){
+  factory Post.createPostFromDoc(DocumentSnapshot doc){
     return Post(
       postID: doc.data()["postID"],
       ownerID: doc.data()["ownerID"],
@@ -206,26 +206,37 @@ class _PostState extends State<Post> {
           return CircularProgressIndicator();
         }
         customUser user = customUser.fromDocument(snapshot.data);
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(currentUser.photo_URL),
-            backgroundColor: Colors.grey,
-          ),
-          title: GestureDetector(
-            onTap: () => print("Tapped on username"),
-            child: Text(
-              user.username,
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+        return Row(
+          children: [
+            Expanded(
+              flex: 10,
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: CachedNetworkImageProvider(currentUser.photo_URL),
+                  backgroundColor: Colors.grey,
+                ),
+                title: GestureDetector(
+                  onTap: () => print("Tapped on username"),
+                  child: Text(
+                    user.username,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                subtitle: Text(location),
+                trailing: IconButton(
+                  icon: Icon(Icons.more_vert),
+                  onPressed: () => print("tapped on trailing button"),
+                ),
               ),
             ),
-          ),
-          subtitle: Text(location),
-          trailing: IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: () => print("tapped on trailing button"),
-          ),
+            Expanded(
+              flex: 1,
+              child: Text(timeago.format(time.toDate(), locale: 'en_short')),
+            ),
+          ],
         );
       },
     );
@@ -485,9 +496,9 @@ class _PostState extends State<Post> {
           .add({
         "type": "like",
         "username": currentUser.username,
-        "userId": currentUser.userID,
+        "userID": currentUser.userID,
         "photo_URL": currentUser.photo_URL,
-        "postId": postID,
+        "postID": postID,
         "mediaURL": mediaURL,
         "time": DateTime.now(),
       });

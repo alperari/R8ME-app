@@ -103,6 +103,44 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Future<void> calculateOverallRate() async {
+    int likeCount = 0;
+    int dislikeCount = 0;
+
+    await postsRef
+        .doc(currentUser.userID)
+        .collection("user_posts").get().then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((row) {
+        likeCount += row.data()["likeCount"].toInt();
+        dislikeCount += row.data()["dislikeCount"].toInt();
+
+      });
+    });
+
+    double newRate;
+
+    if((likeCount == 0 && dislikeCount == 0) || (likeCount == 0 && dislikeCount != 0)){
+      newRate = 0.0;
+    }
+    else if(likeCount != 0 && dislikeCount == 0){
+      newRate = 100;
+    }
+    else if(likeCount != 0 && dislikeCount != 0){
+      newRate= likeCount / (likeCount+dislikeCount);
+      newRate = num.parse(newRate.toStringAsFixed(2));
+    }
+
+    //update current rate
+    currentUser.rate = newRate;
+    print("updated currentUser locally");
+
+    //update in the database
+    usersRef.doc(currentUser.userID).update({
+      "rate" : newRate
+    });
+
+    print("updated in the database");
+  }
 
   build_grid_or_scrollable_button(){
     return Row(
@@ -137,11 +175,14 @@ class _ProfileState extends State<Profile> {
   }
 
 
+
+
   @override
     void initState() {
       // TODO: implement initState
       super.initState();
       getProfilePosts();
+      calculateOverallRate();
   }
 
 

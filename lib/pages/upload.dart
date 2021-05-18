@@ -236,7 +236,6 @@ class _UploadState extends State<Upload>
     );
 
   }
-
   Scaffold CaptionScreen() {
     return Scaffold(
       appBar: AppBar(

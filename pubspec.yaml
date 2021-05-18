@@ -33,7 +33,7 @@ dependencies:
   material_floating_search_bar: ^0.2.6
   tiktoklikescroller: ^0.1.5
   firebase_storage: ^8.0.4
-  firebase_analytics: ^8.0.1
+  firebase_analytics: ^8.0.4
   cached_network_image: ^3.0.0
   image: ^3.0.2
   xml: ^5.0.0

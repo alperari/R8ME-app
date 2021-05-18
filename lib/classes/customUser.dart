@@ -11,7 +11,7 @@ class customUser
 
   int followers_count;
   int followings_count;
-  int rate;
+  double rate;
 
   //POSTS below
 
@@ -49,7 +49,7 @@ class customUser
 
       followers_count: doc.data()["followers"],
       followings_count: doc.data()["followings"],
-      rate : doc.data()["rate"]
+      rate : doc.data()["rate"].toDouble()
     );
   }
 }

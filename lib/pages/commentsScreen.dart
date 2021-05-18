@@ -88,9 +88,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
         "type": "comment",
         "comment_text" : _commentController.text,
         "username": currentUser.username,
-        "userId": currentUser.userID,
+        "userID": currentUser.userID,
         "photo_URL": currentUser.photo_URL,
-        "postId": postID,
+        "postID": postID,
         "mediaURL": mediaURL,
         "time": DateTime.now(),
       });

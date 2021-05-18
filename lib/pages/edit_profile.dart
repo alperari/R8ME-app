@@ -3,13 +3,20 @@ import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/settings.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
 class EditProfile extends StatefulWidget {
-  customUser currentUser;
-  EditProfile({this.currentUser});
+
+  const EditProfile({Key key, this.currentUser, this.analytics, this.observer}): super(key: key);
+
+  final customUser currentUser;
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -281,7 +288,7 @@ class _EditProfileState extends State<EditProfile> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomePage(widget.currentUser.userID)));
+                                  builder: (context) => HomePage(documentId: widget.currentUser.userID, analytics: widget.analytics, observer: widget.observer,)));
 
                         }
                       },

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/pages/search.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +29,13 @@ customUser currentUser;
 
 
 class HomePage extends StatelessWidget {
+  const HomePage({Key key,this.documentId, this.analytics, this.observer}): super(key: key);
+
   final String documentId;
 
-  HomePage(this.documentId);
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +47,7 @@ class HomePage extends StatelessWidget {
 
 
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data.data();
-          return MyHomePageLoaded(incoming_data: data,);
+          return MyHomePageLoaded(doc: snapshot.data , analytics: analytics,observer: observer,);
         }
         return Scaffold(
           body: Center(
@@ -54,10 +59,19 @@ class HomePage extends StatelessWidget {
 }
 
 
+
+
+
+
+
 class MyHomePageLoaded extends StatefulWidget {
 
-  final Map<String, dynamic> incoming_data;
-  MyHomePageLoaded({this.incoming_data});
+  final DocumentSnapshot doc;
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
+
+  MyHomePageLoaded({this.doc,this.analytics,this.observer});
 
   @override
   _MyHomePageLoadedState createState() => _MyHomePageLoadedState();
@@ -68,7 +82,6 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
   PageController pageController;
   int pageIndex = 0;
 
-  var mydata;
 
   onPageChanged(int pindex){
     setState(() {
@@ -79,30 +92,35 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
     pageController.jumpToPage(pindex);
   }
 
-
+  Future<void> Analytics_setUserID(String UserID) async{
+    widget.analytics.setUserId(UserID);
+  }
 
   @override
   void initState() {
     // TODO: implement initState
-    mydata = widget.incoming_data;
-    currentUser = customUser(mydata);
+    currentUser = customUser.fromDocument(widget.doc);
+    Analytics_setUserID(currentUser.userID);
 
-    pageController = PageController(
+    pageController = PageController();
 
-    );
     super.initState();
   }
 
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    pageController.dispose();
-    super.dispose();
+
+
+
+
+
+
+  Future<void> Analytics_SetCurrentScreen() async{
+    await widget.analytics.setCurrentScreen(screenName: "Homepage Screen" , screenClassOverride: "homepage");
   }
 
   @override
   Widget build(BuildContext context) {
+    Analytics_SetCurrentScreen();
 
     return Scaffold(
 
@@ -139,4 +157,13 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
 
     );
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    pageController.dispose();
+    super.dispose();
+  }
+
+
 }

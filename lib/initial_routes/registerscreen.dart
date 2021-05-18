@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cs310/UserHelper.dart';
@@ -5,10 +7,15 @@ import 'package:cs310/UserHelper.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class RegisterScreen extends StatefulWidget {
-  final String title = 'Registration';
+
+  const RegisterScreen({Key key, this.analytics, this.observer}): super(key: key);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
+
   @override
-  State<StatefulWidget> createState() =>
-      RegisterScreenState();
+  State<StatefulWidget> createState() => RegisterScreenState();
 }
 class RegisterScreenState extends State<RegisterScreen> {
 
@@ -65,9 +72,13 @@ class RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Future<void> Analytics_SetCurrentScreen() async{
+    await widget.analytics.setCurrentScreen(screenName: "Register Screen", screenClassOverride: "register");
+  }
 
   @override
   Widget build(BuildContext context) {
+    Analytics_SetCurrentScreen();
     return  Scaffold(
         appBar: AppBar(
           title: Text("REGISTER"),

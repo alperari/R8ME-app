@@ -1,3 +1,6 @@
+import 'package:cs310/initial_routes/homepage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -5,6 +8,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginScreen extends StatefulWidget {
+
+  const LoginScreen({Key key, this.analytics, this.observer}): super(key: key);
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
+
   @override
   State<StatefulWidget> createState() => LoginScreenState();
 }
@@ -19,6 +29,7 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _success;
   String _userEmail;
+  String _userID;
 
   void _signInWithEmailAndPassword() async {
     final User user = (await _auth.signInWithEmailAndPassword(
@@ -30,6 +41,8 @@ class LoginScreenState extends State<LoginScreen> {
       setState(() {
         _success = true;
         _userEmail = user.email;
+        _userID = user.uid;
+
 
       });
     } else {
@@ -40,9 +53,13 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> Analytics_SetCurrentScreen() async{
+    await widget.analytics.setCurrentScreen(screenName: "Login Screen", screenClassOverride: "loginscreen");
+  }
 
   @override
   Widget build(BuildContext context) {
+    Analytics_SetCurrentScreen();
     return Scaffold(
       appBar: AppBar(
         title: Text("LOGIN"),
@@ -104,11 +121,13 @@ class LoginScreenState extends State<LoginScreen> {
                 child: RaisedButton(
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      _signInWithEmailAndPassword();
+                      await _signInWithEmailAndPassword();
 
                       //wait to fetch user data then go to homepage..
-
-                      Navigator.pushNamed(context, "/homepage");
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              HomePage(documentId: _userID, analytics: widget.analytics, observer: widget.observer,),
+                      ));
                     }
                   },
                   child: const Text('Submit'),
@@ -120,10 +139,9 @@ class LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   _success == null
                       ? ''
-                      : (_success
-                      ? 'Successfully signed in ' + _userEmail
-                      : 'Sign in failed'),
-                  style: TextStyle(color: Colors.red),
+                      :
+                      'Successfully signed in',
+                  style: TextStyle(color: Colors.green),
                 ),
               )
             ],

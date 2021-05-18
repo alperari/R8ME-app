@@ -1,5 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cs310/classes/customUser.dart';
+import 'package:cs310/initial_routes/homepage.dart';
+import 'package:cs310/pages/individual_post_screen.dart';
+import 'package:cs310/pages/profile.dart';
+import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -42,11 +47,30 @@ class ActivitiFeed_Item extends StatelessWidget {
     );
   }
 
+  void showPost(context){
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context){
+        return Individual_Post_Screen(userID: userID, postID: postID,);
+      }
+    ));
+  }
+
+  void showProfile(context)async{
+    var doc = await usersRef.doc(userID).get();
+    customUser targetUser = customUser.fromDocument(doc);
+
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context){
+
+          return targetProfile(currentUser: targetUser);
+        }
+    ));
+  }
 
   set_media_and_summarytext(context) {
     if (type == "like" || type == 'comment') {
       mediaPreview = GestureDetector(
-        onTap: () => print("Show post!"),//showPost(context),
+        onTap: () => showPost(context),//showPost(context),
         child: Container(
           height: 50.0,
           width: 50.0,
@@ -77,6 +101,7 @@ class ActivitiFeed_Item extends StatelessWidget {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
 
@@ -88,7 +113,7 @@ class ActivitiFeed_Item extends StatelessWidget {
         color: Colors.greenAccent[100],
         child: ListTile(
           title: GestureDetector(
-            onTap: () => print("Show profile!"),//showProfile(context, profileId: userId),
+            onTap: () => showProfile(context),//showProfile(context, profileId: userId),
             child: RichText(
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
