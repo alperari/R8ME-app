@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/commentsScreen.dart';
+import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:photo_view/photo_view.dart';
@@ -112,6 +113,11 @@ class Post extends StatefulWidget {
     }
   }
 
+
+
+
+
+
   @override
   _PostState createState() => _PostState(
       postID: this.postID,
@@ -197,6 +203,20 @@ class _PostState extends State<Post> {
     }));
   }
 
+  void showProfile(context)async{
+    var doc = await usersRef.doc(ownerID).get();
+    customUser targetUser = customUser.fromDocument(doc);
+
+    ///TODO: remove the comment lines for if condition, so that owner of post shall not view himself/herself
+   //if(currentUser.userID != ownerID){
+     Navigator.push(context, MaterialPageRoute(
+         builder: (context){
+
+           return targetProfile(currentUser: targetUser);
+         }
+     ));
+   //}
+  }
 
   buildPostHeader() {
     return FutureBuilder(
@@ -216,7 +236,7 @@ class _PostState extends State<Post> {
                   backgroundColor: Colors.grey,
                 ),
                 title: GestureDetector(
-                  onTap: () => print("Tapped on username"),
+                  onTap: () => showProfile(context),
                   child: Text(
                     user.username,
                     style: TextStyle(

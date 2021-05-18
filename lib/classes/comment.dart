@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cs310/classes/customUser.dart';
+import 'package:cs310/initial_routes/homepage.dart';
+import 'package:cs310/pages/targetProfile.dart';
 import "package:flutter/material.dart";
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -32,7 +35,26 @@ class Comment{
   }
 }
 
-Column ReturnCommentWidget(Comment mycomment, String outcoming_userID){
+
+
+
+Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildContext context){
+
+  void showProfile(context)async{
+    var doc = await usersRef.doc(mycomment.userID).get();
+    customUser targetUser = customUser.fromDocument(doc);
+
+    ///TODO: remove the comment lines for if condition, so that owner of post shall not view himself/herself
+    //if(currentUser.userID != ownerID){
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context){
+
+          return targetProfile(currentUser: targetUser);
+        }
+    ));
+    //}
+  }
+
   return Column(
     children: <Widget>[
       ListTile(
@@ -40,7 +62,13 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID){
           child: Column (
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(mycomment.username, style: TextStyle(fontWeight: FontWeight.bold),),
+              GestureDetector(
+                child: Text(mycomment.username, style: TextStyle(fontWeight: FontWeight.bold),),
+                onTap: (){
+                  print("Tapped on username");
+                  showProfile(context);
+                  },
+              ),
               Text(mycomment.text),
             ],
          ),

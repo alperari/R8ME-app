@@ -11,8 +11,8 @@ import 'package:cs310/UserHelper.dart';
 import "package:cs310/classes/customUser.dart";
 
 
-
-
+User auth = FirebaseAuth.instance.currentUser;
+customUser authUser;
 
 
 class Profile extends StatefulWidget {
@@ -31,12 +31,13 @@ class _ProfileState extends State<Profile> {
   int postCount = 0;
   List<Post> posts = [];
 
+  bool isFollowing = false;
+
   getProfilePosts() async{
     setState(() {
       isLoading=true;
     });
 
-    print(2);
 
     QuerySnapshot snapshot = await postsRef
         .doc(widget.currentUser.userID)
@@ -45,10 +46,8 @@ class _ProfileState extends State<Profile> {
         .get();
     setState(() {
       isLoading = false;
-      print(1);
       postCount = snapshot.docs.length;
       posts = snapshot.docs.map((e) => Post.createPostFromDoc(e)).toList();
-      print(3);
 
     });
   }
@@ -175,7 +174,93 @@ class _ProfileState extends State<Profile> {
   }
 
 
+  Follow(){
+    setState(() {
+      isFollowing = true;
+    });
 
+    //add authedUser's followings the widget.currentUser.userID
+    followings_table_Ref.doc(authUser.userID).collection("myFollowings").doc(widget.currentUser.userID).set({});
+
+    //add currentUser's followers the autherUser's ID
+    followers_table_Ref.doc(widget.currentUser.userID).collection("myFollowers").doc(authUser.userID).set({});
+
+    //add this activity to feedItem of user being followed, in this case its currentUser
+    activityFeedRef
+        .doc(widget.currentUser.userID)
+        .collection("feedItems")
+        .add({
+      "type": "follow",
+      "ownerID": widget.currentUser.userID,
+      "username": authUser.username,
+      "userID": authUser.userID,
+      "photo_URL": authUser.photo_URL,
+      "time": DateTime.now(),
+    });
+  }
+  Unfollow(){
+    setState(() {
+      isFollowing = false;
+    });
+
+    //remove widget.currentUser.userID from autherUser's followings
+    followings_table_Ref.doc(authUser.userID).collection("myFollowings").doc(widget.currentUser.userID).get().then((doc) {
+      if(doc.exists){
+        doc.reference.delete();
+      }
+    });
+
+    //remove autherUser.uid from widget.currentUser's followers
+    followings_table_Ref.doc(widget.currentUser.userID).collection("myFollowers").doc(authUser.userID).get().then((doc) {
+      if(doc.exists){
+        doc.reference.delete();
+      }
+    });
+  }
+
+  Widget Button_Follow_Unfollow(String buttonText, Function action){
+    return FlatButton.icon(
+        onPressed: (){
+          //Do the Action : Follow/Unfolow
+          if(buttonText == "Follow"){
+            Follow();
+          }
+          else if(buttonText == "Unfollow"){
+            Unfollow();
+          }
+        },
+        icon: isFollowing ==true ?  Icon(Icons.person_remove, size: 35) : Icon(Icons.person_add,size:35) ,
+        label:Text(buttonText),
+      //color: isFollowing ==true ? Colors.redAccent : Colors.lightGreen,
+    );
+
+  }
+
+  Widget buildButton_Edit_or_Follow(){
+    //this will show the button if the currentUserOnPage is the owner user.
+    //otherwise it should show the button "Follow" if not following,  "Unfollow" otherwise
+    if(authUser.userID == widget.currentUser.userID){
+      return FlatButton.icon(
+          onPressed: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditProfile(currentUser: widget.currentUser)));
+          },
+          icon: Icon(Icons.edit),label:Text("Edit"));
+    }
+    else{
+      if(isFollowing){
+        //Show "Unfollow
+        return Button_Follow_Unfollow("Unfollow", Unfollow);
+      }
+      else{
+        //Show "Follow"
+        return Button_Follow_Unfollow("Follow", Follow);
+
+      }
+    }
+  }
 
   @override
     void initState() {
@@ -190,206 +275,214 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
 
 
-    return Stack(
-          children: <Widget>[
-            SizedBox.expand(
-              child: Image.asset("assets/applogo.jpeg", fit: BoxFit.contain,),
-            ),
+    return FutureBuilder(
+      future: usersRef.doc(auth.uid).get(),
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.done){
+          authUser = customUser.fromDocument(snapshot.data);
+          return Stack(
+            children: <Widget>[
+              SizedBox.expand(
+                child: Image.asset("assets/applogo.jpeg", fit: BoxFit.contain,),
+              ),
 
-            DraggableScrollableSheet(
-              minChildSize: 0.1,
-              initialChildSize: 0.22,
-              builder: (context, scrollController){
-                return SingleChildScrollView(
-                  controller: scrollController,
-                  child: Container(
+              DraggableScrollableSheet(
+                minChildSize: 0.1,
+                initialChildSize: 0.22,
+                builder: (context, scrollController){
+                  return SingleChildScrollView(
+                    controller: scrollController,
+                    child: Container(
 
-                    decoration: BoxDecoration(
+                      decoration: BoxDecoration(
 
-                        border: Border.all(),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        )
-                    ),
+                          border: Border.all(),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          )
+                      ),
 
-                    constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-                    //color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        //for user profile header
-                        Container(
-                          padding : EdgeInsets.only(left: 32, right: 32, top: 32),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                width: 50.0,
-                                height: 50.0,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: CachedNetworkImageProvider(widget.currentUser.photo_URL),
-                                    fit: BoxFit.cover),
+                      constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                      //color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          //for user profile header
+                          Container(
+                            padding : EdgeInsets.only(left: 32, right: 32, top: 32),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Container(
+                                  width: 50.0,
+                                  height: 50.0,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: CachedNetworkImageProvider(widget.currentUser.photo_URL),
+                                        fit: BoxFit.cover),
+                                  ),
                                 ),
-                              ),
 
 
-                              SizedBox(width: 16,),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                SizedBox(width: 16,),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(widget.currentUser.username, style: TextStyle(color: Colors.grey[800], fontFamily: "Roboto",
+                                          fontSize: 16, fontWeight: FontWeight.w700
+                                      ),),
+
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: widget.currentUser.userID == authUser.userID ? Colors.white: (isFollowing==true ? Colors.redAccent[200] : Colors.green[300]),
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(
+                                          width: 1
+                                      )
+                                  ),
+                                  child: buildButton_Edit_or_Follow(),
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 16,),
+                          //Container for clients
+                          Container(
+                            padding: EdgeInsets.only(left: 32, right: 32),
+                            child: Column(
+                              children: <Widget>[
+
+                                Text(
+                                  widget.currentUser.bio.toString(),
+                                  style: TextStyle(fontFamily: "Roboto", fontSize: 15),
+                                ),
+
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 16,),
+                          //Container for clients
+
+
+
+                          SizedBox(height: 16,),
+                          Container(
+                            padding: EdgeInsets.all(32),
+                            color: Colors.greenAccent,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Column(
                                   children: <Widget>[
-                                    Text(widget.currentUser.username, style: TextStyle(color: Colors.grey[800], fontFamily: "Roboto",
-                                        fontSize: 16, fontWeight: FontWeight.w700
-                                    ),),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(Icons.image, color: Colors.black, size: 30,),
+                                        SizedBox(width: 4,),
+                                        Text(postCount.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                            fontFamily: "Roboto", fontSize: 24
+                                        ),)
+                                      ],
+                                    ),
 
+                                    Text("Posts", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                        fontFamily: "Roboto", fontSize: 15
+                                    ),)
                                   ],
                                 ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  border: Border.all(
-                                    width: 1
-                                  )
+
+                                Column(
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(Icons.check_box, color: Colors.black, size: 30,),
+                                        SizedBox(width: 4,),
+                                        Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                            fontFamily: "Roboto", fontSize: 24
+                                        ),)
+                                      ],
+                                    ),
+
+                                    Text("Following", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                        fontFamily: "Roboto", fontSize: 15
+                                    ),)
+                                  ],
                                 ),
-                                child: FlatButton.icon(
-                                    onPressed: (){
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => EditProfile(currentUser: widget.currentUser)));
-                                      },
-                                    icon: Icon(Icons.edit),label:Text("Edit")),
-                              )
-                            ],
+
+                                Column(
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(Icons.favorite, color: Colors.black, size: 30,),
+                                        SizedBox(width: 4,),
+                                        Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                            fontFamily: "Roboto", fontSize: 24
+                                        ),)
+                                      ],
+                                    ),
+
+                                    Text("Followers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                        fontFamily: "Roboto", fontSize: 15
+                                    ),)
+                                  ],
+                                ),
+
+                                Column(
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: <Widget>[
+
+                                        SizedBox(width: 4,),
+                                        Text(widget.currentUser.rate.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                            fontFamily: "Roboto", fontSize: 24
+                                        ),)
+                                      ],
+                                    ),
+
+                                    Text("Rating", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                        fontFamily: "Roboto", fontSize: 15
+                                    ),)
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 16,),
-                        //Container for clients
-                        Container(
-                          padding: EdgeInsets.only(left: 32, right: 32),
-                          child: Column(
-                            children: <Widget>[
 
-                              Text(
-                                widget.currentUser.bio.toString(),
-                                style: TextStyle(fontFamily: "Roboto", fontSize: 15),
-                              ),
+                          //Posts will be displayed here
+                          Divider(thickness: 3,),
+                          build_grid_or_scrollable_button(),
+                          Divider(thickness: 3,),
+                          buildProfilePosts(),
+                        ],
+                      ),
 
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 16,),
-                        //Container for clients
-
-
-
-                        SizedBox(height: 16,),
-                        Container(
-                          padding: EdgeInsets.all(32),
-                          color: Colors.greenAccent,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Icon(Icons.image, color: Colors.black, size: 30,),
-                                      SizedBox(width: 4,),
-                                      Text(postCount.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                          fontFamily: "Roboto", fontSize: 24
-                                      ),)
-                                    ],
-                                  ),
-
-                                  Text("Posts", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                      fontFamily: "Roboto", fontSize: 15
-                                  ),)
-                                ],
-                              ),
-
-                              Column(
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Icon(Icons.check_box, color: Colors.black, size: 30,),
-                                      SizedBox(width: 4,),
-                                      Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                          fontFamily: "Roboto", fontSize: 24
-                                      ),)
-                                    ],
-                                  ),
-
-                                  Text("Following", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                      fontFamily: "Roboto", fontSize: 15
-                                  ),)
-                                ],
-                              ),
-
-                              Column(
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Icon(Icons.favorite, color: Colors.black, size: 30,),
-                                      SizedBox(width: 4,),
-                                      Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                          fontFamily: "Roboto", fontSize: 24
-                                      ),)
-                                    ],
-                                  ),
-
-                                  Text("Followers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                      fontFamily: "Roboto", fontSize: 15
-                                  ),)
-                                ],
-                              ),
-
-                              Column(
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-
-                                      SizedBox(width: 4,),
-                                      Text(widget.currentUser.rate.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                          fontFamily: "Roboto", fontSize: 24
-                                      ),)
-                                    ],
-                                  ),
-
-                                  Text("Rating", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                      fontFamily: "Roboto", fontSize: 15
-                                  ),)
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                       //Posts will be displayed here
-                        Divider(thickness: 3,),
-                        build_grid_or_scrollable_button(),
-                        Divider(thickness: 3,),
-                        buildProfilePosts(),
-                      ],
                     ),
-
-                  ),
-                );
-              },
-            )
-          ],
-        );
+                  );
+                },
+              )
+            ],
+          );
+        }
+        else{
+          return Scaffold(
+            body: Center(
+                child: Container(child: CircularProgressIndicator(), color: Colors.white,)),
+          );
+        }
+      }
+    );
 
   }
 }

@@ -19,6 +19,10 @@ final postsRef = FirebaseFirestore.instance.collection("posts");
 final storageRef = FirebaseStorage.instance.ref();
 final commentsRef = FirebaseFirestore.instance.collection("posts_comments");
 
+final followers_table_Ref = FirebaseFirestore.instance.collection("followers_table");
+final followings_table_Ref = FirebaseFirestore.instance.collection("followings_table");
+
+
 final activityFeedRef = FirebaseFirestore.instance.collection("feeds");
 
 final FirebaseAuth myauth = FirebaseAuth.instance;

@@ -56,7 +56,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         List<Widget> comments = [];
         snapshot.data.docs.forEach((doc) {
           Comment currentComment = Comment.fromDocument(doc);
-          comments.add( ReturnCommentWidget(currentComment, currentUserOnPage.userID));
+          comments.add( ReturnCommentWidget(currentComment, currentUserOnPage.userID,context));
         });
 
         return ListView(
