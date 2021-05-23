@@ -2,12 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:tiktoklikescroller/tiktoklikescroller.dart';
 
 
-class Timeline extends StatelessWidget {
+class Timeline extends StatefulWidget {
+  @override
+  _TimelineState createState() => _TimelineState();
+}
+
+class _TimelineState extends State<Timeline> {
   @override
   Widget build(BuildContext context) {
+
+    return Scaffold(
+      body: Text("Timeline"),
+    );
+  }
+}
+
+/*
     final List<Color> colors = <Color>[Colors.red, Colors.blue];
 
-    return MaterialApp(
+MaterialApp(
       home: Scaffold(
         body: TikTokStyleFullPageScroller(
           contentSize: colors.length,
@@ -28,5 +41,4 @@ class Timeline extends StatelessWidget {
         ),
       ),
     );
-  }
-}
+    */

@@ -3,9 +3,30 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+
+Future<UserCredential> signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  UserCredential userCredential = await _auth.signInWithCredential(credential);
+  print(userCredential.toString());
+  return userCredential;
+}
+
 
 class LoginScreen extends StatefulWidget {
 
@@ -53,13 +74,21 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
+
+
   Future<void> Analytics_SetCurrentScreen() async{
     await widget.analytics.setCurrentScreen(screenName: "Login Screen", screenClassOverride: "loginscreen");
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
     Analytics_SetCurrentScreen();
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("LOGIN"),
@@ -143,7 +172,22 @@ class LoginScreenState extends State<LoginScreen> {
                       'Successfully signed in',
                   style: TextStyle(color: Colors.green),
                 ),
-              )
+              ),
+              OutlinedButton(
+                onPressed: () {
+                  signInWithGoogle();
+                },
+
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text(
+                    'Sign in with Google',
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+              ),
             ],
           ),
         ),

@@ -22,6 +22,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final FirebaseAuth myauth = FirebaseAuth.instance;
 
 
+  Future<void> Analytics_SetCurrentScreen() async{
+    await widget.analytics.setCurrentScreen(screenName: "Welcome Screen", screenClassOverride: "welcomescreen");
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    Analytics_SetCurrentScreen();
+  }
+
   @override
   Widget build(BuildContext context) {
 

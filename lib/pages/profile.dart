@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/post.dart';
 import 'package:cs310/classes/postTile.dart';
+import 'package:cs310/crashlytics.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,13 @@ import "package:cs310/pages/edit_profile.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:cs310/UserHelper.dart';
 import "package:cs310/classes/customUser.dart";
+
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+
+import '../initial_routes/homepage.dart';
+import '../initial_routes/homepage.dart';
+import '../initial_routes/homepage.dart';
+import '../initial_routes/homepage.dart';
 
 
 User auth = FirebaseAuth.instance.currentUser;
@@ -32,6 +40,52 @@ class _ProfileState extends State<Profile> {
   List<Post> posts = [];
 
   bool isFollowing = false;
+
+
+  setFollowersList()async{
+    //set the followers count
+    await followers_table_Ref
+        .doc(widget.currentUser.userID)
+        .collection("myFollowers")
+        .get().then((doc) {
+          setState(() {
+            widget.currentUser.followers_count = doc.size;
+          });
+    });
+  }
+
+  setFollowingsList()async{
+    //set the following count
+    await followings_table_Ref
+        .doc(widget.currentUser.userID)
+        .collection("myFollowings")
+        .get().then((doc) {
+      setState(() {
+        widget.currentUser.followings_count = doc.size;
+      });
+    });
+  }
+
+  check_curentlyFollowing() async{
+    DocumentSnapshot snapshot = await followers_table_Ref
+        .doc(widget.currentUser.userID)
+        .collection("myFollowers")
+        .doc(authUser.userID)
+        .get().then((doc) {
+          if(doc.exists){
+            setState(() {
+              isFollowing = true;
+            });
+          }
+          else{
+            setState(() {
+              isFollowing = false;
+            });
+          }
+    });
+
+  }
+
 
   getProfilePosts() async{
     setState(() {
@@ -169,21 +223,33 @@ class _ProfileState extends State<Profile> {
               ? Colors.deepPurple
               : Colors.grey,
         ),
+        IconButton(
+          onPressed: ()async{
+            customCrashLog("Tapped on crash button");
+          },
+          icon: Icon(Icons.block_outlined),
+          color: Colors.red,
+        )
       ],
     );
   }
 
 
   Follow(){
-    setState(() {
-      isFollowing = true;
-    });
 
     //add authedUser's followings the widget.currentUser.userID
-    followings_table_Ref.doc(authUser.userID).collection("myFollowings").doc(widget.currentUser.userID).set({});
+    followings_table_Ref
+        .doc(authUser.userID)
+        .collection("myFollowings")
+        .doc(widget.currentUser.userID)
+        .set({});
 
     //add currentUser's followers the autherUser's ID
-    followers_table_Ref.doc(widget.currentUser.userID).collection("myFollowers").doc(authUser.userID).set({});
+    followers_table_Ref
+        .doc(widget.currentUser.userID)
+        .collection("myFollowers")
+        .doc(authUser.userID)
+        .set({});
 
     //add this activity to feedItem of user being followed, in this case its currentUser
     activityFeedRef
@@ -197,25 +263,38 @@ class _ProfileState extends State<Profile> {
       "photo_URL": authUser.photo_URL,
       "time": DateTime.now(),
     });
-  }
-  Unfollow(){
     setState(() {
-      isFollowing = false;
+      isFollowing = true;
     });
 
+  }
+  Unfollow(){
+
     //remove widget.currentUser.userID from autherUser's followings
-    followings_table_Ref.doc(authUser.userID).collection("myFollowings").doc(widget.currentUser.userID).get().then((doc) {
-      if(doc.exists){
-        doc.reference.delete();
+    followings_table_Ref
+        .doc(authUser.userID)
+        .collection("myFollowings")
+        .doc(widget.currentUser.userID)
+        .get().then((doc) {
+          if(doc.exists){
+            doc.reference.delete();
       }
     });
 
     //remove autherUser.uid from widget.currentUser's followers
-    followings_table_Ref.doc(widget.currentUser.userID).collection("myFollowers").doc(authUser.userID).get().then((doc) {
-      if(doc.exists){
-        doc.reference.delete();
-      }
+    followers_table_Ref
+        .doc(widget.currentUser.userID)
+        .collection("myFollowers")
+        .doc(authUser.userID)
+        .get().then((doc) {
+          if(doc.exists){
+            doc.reference.delete();
+          }
+        });
+    setState(() {
+      isFollowing = false;
     });
+
   }
 
   Widget Button_Follow_Unfollow(String buttonText, Function action){
@@ -224,9 +303,15 @@ class _ProfileState extends State<Profile> {
           //Do the Action : Follow/Unfolow
           if(buttonText == "Follow"){
             Follow();
+            setState(() {
+              widget.currentUser.followers_count++;
+            });
           }
           else if(buttonText == "Unfollow"){
             Unfollow();
+            setState(() {
+              widget.currentUser.followers_count--;
+            });
           }
         },
         icon: isFollowing ==true ?  Icon(Icons.person_remove, size: 35) : Icon(Icons.person_add,size:35) ,
@@ -267,7 +352,13 @@ class _ProfileState extends State<Profile> {
       // TODO: implement initState
       super.initState();
       getProfilePosts();
+      setFollowersList();
+      setFollowingsList();
+
       calculateOverallRate();
+      check_curentlyFollowing();
+
+      enableCrashlytics();
   }
 
 
@@ -279,7 +370,9 @@ class _ProfileState extends State<Profile> {
       future: usersRef.doc(auth.uid).get(),
       builder: (context, snapshot) {
         if(snapshot.connectionState == ConnectionState.done){
+
           authUser = customUser.fromDocument(snapshot.data);
+
           return Stack(
             children: <Widget>[
               SizedBox.expand(
@@ -426,7 +519,7 @@ class _ProfileState extends State<Profile> {
                                       children: <Widget>[
                                         Icon(Icons.favorite, color: Colors.black, size: 30,),
                                         SizedBox(width: 4,),
-                                        Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                        Text(widget.currentUser.followers_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                             fontFamily: "Roboto", fontSize: 24
                                         ),)
                                       ],
@@ -478,7 +571,7 @@ class _ProfileState extends State<Profile> {
         else{
           return Scaffold(
             body: Center(
-                child: Container(child: CircularProgressIndicator(), color: Colors.white,)),
+                child: Container(child: CircularProgressIndicator())),
           );
         }
       }

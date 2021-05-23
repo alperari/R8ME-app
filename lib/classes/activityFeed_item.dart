@@ -68,7 +68,7 @@ class ActivitiFeed_Item extends StatelessWidget {
   }
 
   set_media_and_summarytext(context) {
-    if (type == "like" || type == 'comment') {
+    if (type == "like" || type == 'comment' ||type == "dislike") {
       mediaPreview = GestureDetector(
         onTap: () => showPost(context),//showPost(context),
         child: Container(
@@ -91,6 +91,8 @@ class ActivitiFeed_Item extends StatelessWidget {
     }
     if (type == 'like') {
       summaryText = "liked your post";
+    } else if(type == "dislike"){
+      summaryText = "disliked your post";
     } else if (type == 'follow') {
       summaryText = "is following you";
     } else if (type == 'comment') {

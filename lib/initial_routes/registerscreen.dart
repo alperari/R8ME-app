@@ -35,6 +35,8 @@ class RegisterScreenState extends State<RegisterScreen> {
     // TODO: implement initState
     _success=null;
     _userEmail = null;
+    Analytics_SetCurrentScreen();
+
     super.initState();
   }
 
@@ -76,9 +78,9 @@ class RegisterScreenState extends State<RegisterScreen> {
     await widget.analytics.setCurrentScreen(screenName: "Register Screen", screenClassOverride: "register");
   }
 
+
   @override
   Widget build(BuildContext context) {
-    Analytics_SetCurrentScreen();
     return  Scaffold(
         appBar: AppBar(
           title: Text("REGISTER"),

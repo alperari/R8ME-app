@@ -15,6 +15,7 @@ class Walkthrough extends StatefulWidget {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
 
+
   @override
   _WalkthroughState createState() => _WalkthroughState();
 }
@@ -49,6 +50,7 @@ class _WalkthroughState extends State {
     "Start your journey",
     "Let people know how they are eligible",
   ];
+
 
 
 

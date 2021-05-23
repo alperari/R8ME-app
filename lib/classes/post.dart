@@ -422,7 +422,6 @@ class _PostState extends State<Post> {
         "rate" : calculateRate(likeCount, dislikeCount)
 
       });
-      removeLikeFromActivityFeed();
     }
 
     //if it is not liked, then like on tap
@@ -477,7 +476,7 @@ class _PostState extends State<Post> {
         "rate" : calculateRate(likeCount, dislikeCount)
 
       });
-
+      addDislikeToActivityFeed();
     }
 
     //if it is not liked, then like on tap
@@ -524,22 +523,25 @@ class _PostState extends State<Post> {
       });
     }
   }
-
-  removeLikeFromActivityFeed() {
+  addDislikeToActivityFeed() {
+    // add a notification to the postOwner's activity feed only if comment made by OTHER user (to avoid getting notification for our own like)
     bool isNotPostOwner = true;//currentUserOnPage.userID != ownerID;
     if (isNotPostOwner) {
       activityFeedRef
           .doc(ownerID)
           .collection("feedItems")
-          .doc(postID)
-          .get()
-          .then((doc) {
-        if (doc.exists) {
-          doc.reference.delete();
-        }
+          .add({
+        "type": "dislike",
+        "username": currentUser.username,
+        "userID": currentUser.userID,
+        "photo_URL": currentUser.photo_URL,
+        "postID": postID,
+        "mediaURL": mediaURL,
+        "time": DateTime.now(),
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

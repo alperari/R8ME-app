@@ -43,27 +43,4 @@ void updateUserById({String Uid, Map<String,dynamic> data}) async {
         );
   }
 }
-  // static saveUser(User user) async {
-  //
-  //   Map<String, dynamic> userData = {
-  //     "userID" : user.uid,
-  //     "username": user.displayName,
-  //     "email": user.email,
-  //     "photoURL": user.photoURL,
-  //     "bio" : "Tell us about yourself!",
-  //     "followings" : 0,
-  //     "followers": 0,
-  //     "rate": 0,
-  //
-  //   };
-  //   final userRef = _db.collection("users").doc(user.uid);
-  //   if ((await userRef.get()).exists) {
-  //
-  //     await userRef.update({
-  //       "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,
-  //     });
-  //   } else {
-  //     await _db.collection("users").doc(user.uid).set(userData);
-  //   }
-  // }
 

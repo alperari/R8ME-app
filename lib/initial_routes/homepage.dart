@@ -10,7 +10,6 @@ import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/upload.dart';
 import 'package:cs310/pages/timeline.dart';
 import 'package:cs310/pages/activity_feed.dart';
-
 import "package:cs310/classes/customUser.dart";
 
 final FirebaseUser = FirebaseAuth.instance.currentUser;
@@ -105,6 +104,7 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
     // TODO: implement initState
     currentUser = customUser.fromDocument(widget.doc);
     Analytics_setUserID(currentUser.userID);
+    Analytics_SetCurrentScreen();
 
     pageController = PageController();
 
@@ -122,9 +122,9 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
     await widget.analytics.setCurrentScreen(screenName: "Homepage Screen" , screenClassOverride: "homepage");
   }
 
+
   @override
   Widget build(BuildContext context) {
-    Analytics_SetCurrentScreen();
 
     return Scaffold(
 
