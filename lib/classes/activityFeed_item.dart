@@ -50,7 +50,7 @@ class ActivitiFeed_Item extends StatelessWidget {
   void showPost(context){
     Navigator.push(context, MaterialPageRoute(
       builder: (context){
-        return Individual_Post_Screen(userID: userID, postID: postID,);
+        return Individual_Post_Screen(userID: auth.uid, postID: postID,);
       }
     ));
   }

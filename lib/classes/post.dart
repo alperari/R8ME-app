@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/commentsScreen.dart';
+import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
@@ -112,9 +113,6 @@ class Post extends StatefulWidget {
       return likeCount/(dislikeCount+likeCount);
     }
   }
-
-
-
 
 
 
@@ -246,10 +244,11 @@ class _PostState extends State<Post> {
                   ),
                 ),
                 subtitle: Text(location),
-                trailing: IconButton(
+                trailing: currentUserOnPage.userID == ownerID ? IconButton(
                   icon: Icon(Icons.more_vert),
-                  onPressed: () => print("tapped on trailing button"),
-                ),
+                  onPressed: () => DeletePost(context)
+                )
+                    : null,
               ),
             ),
             Expanded(
@@ -543,11 +542,78 @@ class _PostState extends State<Post> {
   }
 
 
+
+  DeletePost(BuildContext mainContext) {
+    return showDialog(
+        context: mainContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Do you want to remove post?"),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  deleteEverythingAboutPost();
+                },
+                child: Text(
+                  'Remove',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              )
+            ],
+          );
+        });
+  }
+
+  deleteEverythingAboutPost() async {
+    // delete post from posts collection
+    postsRef
+        .doc(ownerID)
+        .collection('user_posts')
+        .doc(postID)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    // delete uploaded image from storage
+    storageRef.child("image_$postID.jpg").delete();
+
+    // then delete all activity feed notifications
+    QuerySnapshot activityFeedSnapshot = await activityFeedRef
+        .doc(ownerID)
+        .collection("feedItems")
+        .where('postID', isEqualTo: postID)
+        .get();
+
+    activityFeedSnapshot.docs.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    // then delete all comments
+    QuerySnapshot commentsSnapshot = await commentsRef
+        .doc(postID)
+        .collection('comments')
+        .get();
+    commentsSnapshot.docs.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     fillHeart = liked_users[currentUserOnPage.userID] == true;
     fillThumb = disliked_users[currentUserOnPage.userID] == true;
-
     return Column(
       children: <Widget>[
         buildPostHeader(),

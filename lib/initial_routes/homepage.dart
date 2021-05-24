@@ -15,7 +15,6 @@ import "package:cs310/classes/customUser.dart";
 final FirebaseUser = FirebaseAuth.instance.currentUser;
 final usersRef = FirebaseFirestore.instance.collection("users");
 final postsRef = FirebaseFirestore.instance.collection("posts");
-final storageRef = FirebaseStorage.instance.ref();
 final commentsRef = FirebaseFirestore.instance.collection("posts_comments");
 
 final followers_table_Ref = FirebaseFirestore.instance.collection("followers_table");
@@ -23,6 +22,8 @@ final followings_table_Ref = FirebaseFirestore.instance.collection("followings_t
 
 
 final activityFeedRef = FirebaseFirestore.instance.collection("feeds");
+
+final storageRef = FirebaseStorage.instance.ref();
 
 final FirebaseAuth myauth = FirebaseAuth.instance;
 
