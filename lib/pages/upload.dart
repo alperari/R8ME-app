@@ -52,26 +52,26 @@ class _UploadState extends State<Upload>
             children: <Widget>[
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.red
+                    primary: Colors.purple[200]
                 ),
-                child: Text("Capture Photo",style: TextStyle(fontSize: 20),),
+                child: Text("Capture Photo",style: TextStyle(fontSize: 20,color: Colors.black),),
                   onPressed: TakePhoto
 
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.red
+                    primary: Colors.purple[200]
                 ),
-                child: Text("Select From Gallery",style: TextStyle(fontSize: 20),),
+                child: Text("Select From Gallery",style: TextStyle(fontSize: 20,color: Colors.black)),
                 onPressed: ChooseGallery,
 
               ),
               Divider(height: 8,thickness: 3, color: Colors.black,),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue
+                  primary: Colors.white
                 ),
-                child: Text("Cancel",style: TextStyle(fontSize: 20),),
+                child: Text("Cancel",style: TextStyle(fontSize: 20, color: Colors.black),),
                 onPressed: () => Navigator.pop(context),
 
               ),
@@ -143,17 +143,17 @@ class _UploadState extends State<Upload>
           Padding(
             padding: EdgeInsets.only(top: 20.0),
             child: RaisedButton(
+              color: Colors.red[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
                 "Upload Image",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 22.0,
                 ),
               ),
-              color: Colors.red[800],
               onPressed: () => showCustomDialog(context),
             ),
           ),

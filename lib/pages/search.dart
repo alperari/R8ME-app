@@ -19,7 +19,7 @@ class _SearchState extends State<Search>
 
   handleSearch(String query) {
     Future<QuerySnapshot> users = usersRef
-        .where("username", isGreaterThanOrEqualTo: query)
+        .where('username', isGreaterThanOrEqualTo:query).where('username', isLessThanOrEqualTo:query+ '\uf8ff')
         .get();
     setState(() {
       searchResultsFuture = users;

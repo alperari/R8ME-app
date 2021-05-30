@@ -75,7 +75,7 @@ class Post extends StatefulWidget {
       likeCount: doc.data()["likeCount"],
       dislikeCount: doc.data()["dislikeCount"],
 
-      rate : doc.data()["rate"]
+      rate : doc.data()["rate"].toDouble()
     );
   }
 
@@ -345,7 +345,7 @@ class _PostState extends State<Post> {
                  ),
                  Container(
                    child: Text(
-                     "${rate * 100}",
+                     num.parse((rate*100).toStringAsFixed(2)).toString(),
                      style: TextStyle(
                        fontSize: 30,
                        color: Colors.black,

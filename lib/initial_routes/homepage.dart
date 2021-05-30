@@ -20,16 +20,17 @@ final commentsRef = FirebaseFirestore.instance.collection("posts_comments");
 final followers_table_Ref = FirebaseFirestore.instance.collection("followers_table");
 final followings_table_Ref = FirebaseFirestore.instance.collection("followings_table");
 
+final timelineRef = FirebaseFirestore.instance.collection("timeline");
 
 final activityFeedRef = FirebaseFirestore.instance.collection("feeds");
 
 final storageRef = FirebaseStorage.instance.ref();
 
-final FirebaseAuth myauth = FirebaseAuth.instance;
+final FirebaseAuth auth = FirebaseAuth.instance;
 
 
 customUser currentUser;
-
+customUser authUser ;
 
 
 class HomePage extends StatelessWidget {
@@ -104,6 +105,7 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
   void initState() {
     // TODO: implement initState
     currentUser = customUser.fromDocument(widget.doc);
+    authUser = customUser.fromDocument(widget.doc);
     Analytics_setUserID(currentUser.userID);
     Analytics_SetCurrentScreen();
 

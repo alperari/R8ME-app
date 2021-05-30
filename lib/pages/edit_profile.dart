@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cs310/UserHelper.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
@@ -7,6 +9,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class EditProfile extends StatefulWidget {
@@ -35,8 +39,6 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _bioController = TextEditingController();
 
   bool showPassword = false;
-
-
 
   @override
   void initState() {
@@ -146,9 +148,12 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                               color: Colors.greenAccent,
                             ),
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.black,
+                            child: GestureDetector(
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.black,
+                              ),
+                              onTap: (){print("tap");},
                             ),
                           )),
                     ],

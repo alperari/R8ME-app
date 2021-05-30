@@ -53,6 +53,7 @@ class _ActivityFeedState extends State<ActivityFeed> {
         backgroundColor: Colors.deepPurple,
         title: Text("Latest Activity"),
         centerTitle: true,
+          automaticallyImplyLeading: false
       ),
       body: Container(
 

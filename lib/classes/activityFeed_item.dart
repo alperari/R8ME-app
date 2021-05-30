@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/individual_post_screen.dart';
-import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -50,7 +49,7 @@ class ActivitiFeed_Item extends StatelessWidget {
   void showPost(context){
     Navigator.push(context, MaterialPageRoute(
       builder: (context){
-        return Individual_Post_Screen(userID: auth.uid, postID: postID,);
+        return Individual_Post_Screen(userID: auth.currentUser.uid, postID: postID,);
       }
     ));
   }

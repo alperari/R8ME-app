@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cs310/initial_routes//homepage.dart' as homepage;
 
-final _auth = homepage.myauth;
+final _auth = homepage.auth;
 
 
 class Settings extends StatefulWidget {
