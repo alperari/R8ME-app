@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image/image.dart' as im;
+import 'package:uuid/uuid.dart';
 
 import 'package:cs310/UserHelper.dart';
 import 'package:cs310/classes/customUser.dart';
@@ -7,7 +10,6 @@ import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/settings.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,6 +42,186 @@ class _EditProfileState extends State<EditProfile> {
 
   bool showPassword = false;
 
+  File myfile;
+  bool uploadingProgress = false;
+  String profilePictureID = Uuid().v4();
+
+  void showCustomDialog(BuildContext context) => showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Center(child: Text("Change Profile Picture",style: TextStyle(fontSize: 20),)),
+                Divider(thickness: 1,),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.purple[200]
+                    ),
+                    child: Text("Capture Photo",style: TextStyle(fontSize: 20,color: Colors.black),),
+                    onPressed: TakePhoto
+
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.purple[200]
+                  ),
+                  child: Text("Select From Gallery",style: TextStyle(fontSize: 20,color: Colors.black)),
+                  onPressed: ChooseGallery,
+
+                ),
+                Divider(height: 8,thickness: 3, color: Colors.black,),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.white
+                  ),
+                  child: Text("Cancel",style: TextStyle(fontSize: 20, color: Colors.black),),
+                  onPressed: () => Navigator.pop(context),
+
+                ),
+
+
+              ],
+            ),
+          ),
+        );
+      });
+
+
+  TakePhoto() async {
+    Navigator.pop(context);
+    File pickedFile = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      maxHeight: 675,
+      maxWidth: 960,
+    );
+    setState(() {
+      myfile = pickedFile;
+    });
+
+  }
+
+  ChooseGallery() async {
+    Navigator.pop(context);
+    File chosenFile = await ImagePicker.pickImage(
+        source: ImageSource.gallery
+    );
+    setState(() {
+      myfile = chosenFile;
+    });
+
+  }
+
+
+
+  clearImage() {
+    setState(() {
+      myfile = null;
+    });
+  }
+
+  compressImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = tempDir.path;
+    im.Image Imagefile = im.decodeImage(myfile.readAsBytesSync());
+    final compressedImageFile = File('$tempPath/profilePicture_$profilePictureID.jpg')..writeAsBytesSync(im.encodeJpg(Imagefile, quality: 85));
+
+    setState(() {
+      myfile = compressedImageFile;
+    });
+  }
+
+  Future<String> uploadImage(imageFile) async {
+
+    UploadTask uploadTask = storageRef.child("profilePicture_$profilePictureID.jpg").putFile(imageFile);
+    TaskSnapshot storageSnap = await uploadTask.whenComplete(() {});
+    String downloadUrl = await storageSnap.ref.getDownloadURL();
+
+    return downloadUrl;
+  }
+
+  SubmitPost() async {
+    setState(() {
+      uploadingProgress = true;
+    });
+    await compressImage();
+
+    String mediaUrl = await uploadImage(myfile);
+
+    //now we have mediaURL, we need to change the corresponding info in firestore usersRef
+    await usersRef.doc(widget.currentUser.userID).update({
+      "photoURL": mediaUrl
+    });
+
+    setState(() {
+      myfile = null;
+      uploadingProgress = false;
+    });
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage(documentId: widget.currentUser.userID,analytics: widget.analytics, observer: widget.observer,)));
+  }
+
+  Scaffold buildApprovingScreen(){
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white70,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: clearImage),
+        title: Text(
+          "Set Profile Picture",
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          FlatButton(
+            onPressed: uploadingProgress ? null : () => SubmitPost(),
+            child: Container(
+              child: Icon(
+                Icons.send_rounded,
+                size: 35,
+              ),
+            ),
+          )
+        ],
+      ),
+      body: ListView(
+        children: <Widget>[
+          uploadingProgress ? LinearProgressIndicator() : Text(""),
+          Container(
+            height: 400.0,
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: FileImage(myfile),
+                      )),
+                ),
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+
+
   @override
   void initState() {
     newData = {
@@ -62,7 +244,7 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return myfile == null ? Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 1,
@@ -153,7 +335,9 @@ class _EditProfileState extends State<EditProfile> {
                                 Icons.edit,
                                 color: Colors.black,
                               ),
-                              onTap: (){print("tap");},
+                              onTap: (){
+                                showCustomDialog(context);
+                              },
                             ),
                           )),
                     ],
@@ -317,7 +501,8 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
       ),
-    );
+    )
+        : buildApprovingScreen();
   }
 
 

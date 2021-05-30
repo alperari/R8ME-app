@@ -50,10 +50,11 @@ class HomePage extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
 
-
         if (snapshot.connectionState == ConnectionState.done) {
+
           return MyHomePageLoaded(doc: snapshot.data , analytics: analytics,observer: observer,);
         }
+
         return Scaffold(
           body: Center(
             child: Container(child: CircularProgressIndicator(), color: Colors.white,)),

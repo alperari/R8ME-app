@@ -31,7 +31,8 @@ class _UploadState extends State<Upload>
 
   File myfile;
   bool uploadingProgress = false;
-  String postID = Uuid().v4();
+  String postID;
+
 
 
 
@@ -107,31 +108,7 @@ class _UploadState extends State<Upload>
     });
   }
 
-  Dialog_select(parentContext) {
 
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text("Create Post"),
-            children: <Widget>[
-              SimpleDialogOption(
-                  child: Text("Capture Photo"),
-                  onPressed: TakePhoto
-              ),
-              SimpleDialogOption(
-                child: Text("Select From Gallery"),
-                onPressed: ChooseGallery,
-              ),
-              Divider(height: 8,thickness: 3, color: Colors.black,),
-              SimpleDialogOption(
-                child: Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          );
-        });
-  }
 
   Container UploadingScreen() {
     return Container(
@@ -154,7 +131,12 @@ class _UploadState extends State<Upload>
                   fontSize: 22.0,
                 ),
               ),
-              onPressed: () => showCustomDialog(context),
+              onPressed: () {
+                setState(() {
+                  postID = Uuid().v4();
+                });
+                showCustomDialog(context);
+            },
             ),
           ),
         ],
@@ -234,8 +216,8 @@ class _UploadState extends State<Upload>
       location: locationController.text,
       description: captionController.text,
     );
-
   }
+
   Scaffold CaptionScreen() {
     return Scaffold(
       appBar: AppBar(
