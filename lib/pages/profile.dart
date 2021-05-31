@@ -409,8 +409,8 @@ class _ProfileState extends State<Profile> {
                           children: <Widget>[
                             GestureDetector(
                               child: Container(
-                                width: 50.0,
-                                height: 50.0,
+                                width: 60.0,
+                                height: 60.0,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(

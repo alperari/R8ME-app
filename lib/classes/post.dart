@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/commentsScreen.dart';
+import 'package:cs310/pages/editPost_screen.dart';
 import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/cupertino.dart';
@@ -223,20 +224,20 @@ class _PostState extends State<Post> {
         if (!snapshot.hasData) {
           return CircularProgressIndicator();
         }
-        customUser user = customUser.fromDocument(snapshot.data);
+        customUser ownerUser = customUser.fromDocument(snapshot.data);
         return Row(
           children: [
             Expanded(
               flex: 10,
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(currentUser.photo_URL),
+                  backgroundImage: CachedNetworkImageProvider(ownerUser.photo_URL),
                   backgroundColor: Colors.grey,
                 ),
                 title: GestureDetector(
                   onTap: () => showProfile(context),
                   child: Text(
-                    user.username,
+                    ownerUser.username,
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -267,7 +268,7 @@ class _PostState extends State<Post> {
         alignment: Alignment.center,
         children: <Widget>[
           Container(
-              height: MediaQuery.of(context).size.height-200,
+              height: MediaQuery.of(context).size.height-300,
               width:  MediaQuery.of(context).size.width,
               child: PhotoView(
                 imageProvider: CachedNetworkImageProvider(
@@ -388,8 +389,8 @@ class _PostState extends State<Post> {
             Expanded(child: Text(description))
           ],
         ),
+        SizedBox(height: 5,),
         Divider(thickness: 3,),
-
       ],
     );
   }
@@ -553,7 +554,29 @@ class _PostState extends State<Post> {
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
+
+                  Map<String,String> data = {
+                    "postID": postID,
+                    "mediaURL": mediaURL,
+                    "description": description,
+                    "location": location,
+                  };
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditPost(currentUser: currentUser, data:data )));
+
+                },
+                child: Text(
+                  'Edit',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
                   deleteEverythingAboutPost();
+                  Navigator.pop(context);
                 },
                 child: Text(
                   'Remove',
@@ -609,6 +632,8 @@ class _PostState extends State<Post> {
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
