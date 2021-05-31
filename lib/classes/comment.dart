@@ -7,6 +7,8 @@ import "package:flutter/material.dart";
 import 'package:timeago/timeago.dart' as timeago;
 
 class Comment{
+  final String commentID;
+  final correspondingPostID;
 
   final String userID;
   final String username;
@@ -16,6 +18,8 @@ class Comment{
 
   //constructor
   Comment({
+    this.commentID,
+    this.correspondingPostID,
     this.userID,
     this.username,
     this.avatarURL,
@@ -24,8 +28,11 @@ class Comment{
   });
 
   //advanced constructor
-  factory Comment.fromDocument(DocumentSnapshot myDoc){
+  factory Comment.fromDocument(DocumentSnapshot myDoc, String postID){
     return Comment(
+      commentID: myDoc.data()["commentID"],
+      correspondingPostID: postID,
+
       userID: myDoc.data()["userID"],
       username: myDoc.data()["username"],
       avatarURL: myDoc.data()["avatarURL"],
@@ -55,6 +62,56 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
     //}
   }
 
+  void deleteEverythingAboutComment()async{
+    //delete comment from comments
+    DocumentSnapshot snapshot = await commentsRef
+        .doc(mycomment.correspondingPostID)
+        .collection("comments")
+        .doc(mycomment.commentID)
+        .get();
+
+    if(snapshot.exists){
+      snapshot.reference.delete();
+    }
+
+
+    //delete from feed items
+    DocumentSnapshot snapshot2 = await activityFeedRef
+      .doc(mycomment.userID)
+      .collection("feedItems")
+      .doc(mycomment.commentID)
+      .get();
+    if(snapshot2.exists){
+      snapshot2.reference.delete();
+    }
+  }
+
+  ShowOptions(BuildContext mainContext) {
+    return showDialog(
+        context: mainContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Do you want to remove your comment?"),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  deleteEverythingAboutComment();
+                },
+                child: Text(
+                  'Remove',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              )
+            ],
+          );
+        });
+  }
+
   return Column(
     children: <Widget>[
       ListTile(
@@ -80,8 +137,7 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
         trailing: outcoming_userID == mycomment.userID ? IconButton(
           icon: Icon(Icons.more_vert),
           onPressed: () {
-            print("Delete the comment!");
-
+            ShowOptions(context);
           },
         ) : null,
       ),

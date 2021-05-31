@@ -500,59 +500,67 @@ class _ProfileState extends State<Profile> {
                                 ),)
                               ],
                             ),
+                            GestureDetector(
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        child: Icon(Icons.check_box,size: 30, color: Colors.black),
+                                        onTap: (){
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followings",)));
+                                        },
+                                      ),
+                                      Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                          fontFamily: "Roboto", fontSize: 24
+                                      ),)
+                                    ],
+                                  ),
 
-                            Column(
-                              children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: Icon(Icons.check_box,size: 30, color: Colors.black),
-                                      onTap: (){
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followings",)));
-                                      },
-                                    ),
-                                    Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                        fontFamily: "Roboto", fontSize: 24
-                                    ),)
-                                  ],
-                                ),
-
-                                Text("Following", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                    fontFamily: "Roboto", fontSize: 15
-                                ),)
-                              ],
+                                  Text("Following", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                      fontFamily: "Roboto", fontSize: 15
+                                  ),)
+                                ],
+                              ),
+                              onTap: (){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followings",)));
+                              },
                             ),
 
-                            Column(
-                              children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: Icon(Icons.favorite, color: Colors.black, size: 30,),
-                                      onTap: (){
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followers",)));
-                                      },
-                                    ),
-                                    SizedBox(width: 4,),
-                                    Text(widget.currentUser.followers_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                        fontFamily: "Roboto", fontSize: 24
-                                    ),)
-                                  ],
-                                ),
+                            GestureDetector(
+                              child:  Column(
+                                children: <Widget>[
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(Icons.favorite, color: Colors.black, size: 30,),
+                                      SizedBox(width: 4,),
+                                      Text(widget.currentUser.followers_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                          fontFamily: "Roboto", fontSize: 24
+                                      ),)
+                                    ],
+                                  ),
 
-                                Text("Followers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                    fontFamily: "Roboto", fontSize: 15
-                                ),)
-                              ],
+                                  Text("Followers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                      fontFamily: "Roboto", fontSize: 15
+                                  ),)
+                                ],
+                              ),
+                              onTap: (){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followers",)));
+                              },
                             ),
+
 
                             Column(
                               children: <Widget>[

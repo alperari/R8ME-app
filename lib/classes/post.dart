@@ -246,7 +246,7 @@ class _PostState extends State<Post> {
                 subtitle: Text(location),
                 trailing: currentUserOnPage.userID == ownerID ? IconButton(
                   icon: Icon(Icons.more_vert),
-                  onPressed: () => DeletePost(context)
+                  onPressed: () => ShowOptions(context)
                 )
                     : null,
               ),
@@ -543,7 +543,7 @@ class _PostState extends State<Post> {
 
 
 
-  DeletePost(BuildContext mainContext) {
+  ShowOptions(BuildContext mainContext) {
     return showDialog(
         context: mainContext,
         builder: (context) {

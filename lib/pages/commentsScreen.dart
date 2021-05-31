@@ -2,6 +2,7 @@ import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/classes/comment.dart";
+import 'package:uuid/uuid.dart';
 
 class CommentsScreen extends StatefulWidget {
 
@@ -55,7 +56,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
         List<Widget> comments = [];
         snapshot.data.docs.forEach((doc) {
-          Comment currentComment = Comment.fromDocument(doc);
+          Comment currentComment = Comment.fromDocument(doc,postID);
           comments.add( ReturnCommentWidget(currentComment, currentUserOnPage.userID,context));
         });
 
@@ -67,10 +68,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 
   void createCommentInFirestore(){
+    String commentID = Uuid().v4();
     commentsRef
         .doc(postID)
         .collection("comments")
-        .add({
+        .doc(commentID)
+        .set({
+          "commentID": commentID,
           "userID" : currentUserOnPage.userID,
           "username" : currentUserOnPage.username,
           "avatarURL" : currentUserOnPage.photo_URL,
@@ -84,7 +88,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
       activityFeedRef
           .doc(ownerID)
           .collection("feedItems")
-          .add({
+          .doc(commentID)
+          .set({
+        "commentID": commentID,
         "type": "comment",
         "comment_text" : _commentController.text,
         "username": currentUser.username,
@@ -101,8 +107,12 @@ class _CommentsScreenState extends State<CommentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Comments"),
+        title: Text("Comments",style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.deepOrangeAccent,
         centerTitle: true,
+        iconTheme: IconThemeData(
+          color: Colors.black, //change your color here
+        ),
       ),
       body: Column(
         children: <Widget>[

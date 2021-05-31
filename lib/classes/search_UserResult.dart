@@ -114,7 +114,9 @@ class _UserResultState extends State<UserResult> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              showProfile(context);
+              if(authUser.userID != widget.user.userID){
+                showProfile(context);
+              }
             },  //showProfile(context, profileId: user.id),
             child: ListTile(
               leading: CircleAvatar(
