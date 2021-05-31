@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cs310/classes/colors.dart';
-import 'package:cs310/pages/targetProfile.dart';
+import 'package:cs310/classes/search_UserResult.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import "package:cs310/classes/customUser.dart";
@@ -117,64 +116,6 @@ class _SearchState extends State<Search>
       appBar: buildSearchField(),
       body:
       searchResultsFuture == null || searchController.text == ""? buildNoContent() : buildSearchResults(),
-    );
-  }
-}
-
-class UserResult extends StatelessWidget {
-  final customUser user;
-
-  UserResult(this.user);
-
-  void showProfile(context)async{
-    var doc = await usersRef.doc(user.userID).get();
-    customUser targetUser = customUser.fromDocument(doc);
-
-    ///TODO: remove the comment lines for if condition, so that owner of post shall not view himself/herself
-    //if(currentUser.userID != ownerID){
-    Navigator.push(context, MaterialPageRoute(
-        builder: (context){
-
-          return targetProfile(currentUser: targetUser);
-        }
-    ));
-    //}
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      color: Colors.greenAccent[100],
-      child: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              showProfile(context);
-            },  //showProfile(context, profileId: user.id),
-            child: ListTile(
-              leading: CircleAvatar(
-                  backgroundImage: NetworkImage(user.photo_URL),
-                  radius: 25
-              ),
-              title: Text(
-                user.username,
-                style:
-                TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                'ID: ${user.userID}',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ),
-          Divider(
-            height: 2.0,
-            color: Colors.white54,
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
-import 'package:cs310/pages/search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cs310/classes/search_UserResult.dart';
 import 'package:flutter/material.dart';
 
 class showFollowers_Followings extends StatefulWidget {
@@ -17,57 +16,6 @@ class showFollowers_Followings extends StatefulWidget {
 class _showFollowers_FollowingsState extends State<showFollowers_Followings> {
 
   Future<List<UserResult>> searchResultsFuture;
-  // setFollowersList()async{
-  //   QuerySnapshot snapshot = await followers_table_Ref
-  //       .doc(widget.currentUser.userID)
-  //       .collection("myFollowers")
-  //       .get();
-  //
-  //   List<UserResult> list = [];
-  //
-  //   snapshot.docs.forEach((doc) async{
-  //     if(doc.exists){
-  //       String id = doc.id;
-  //       DocumentSnapshot userDoc = await usersRef.doc(id).get();
-  //       customUser user = customUser.fromDocument(userDoc);
-  //       UserResult result = UserResult(user);
-  //
-  //       list.add(result);
-  //     }
-  //   });
-  //   setState(() {
-  //     followersList = list;
-  //   });
-  // }
-  //
-  // setFollowingsList()async{
-  //   QuerySnapshot snapshot = await followings_table_Ref
-  //       .doc(widget.currentUser.userID)
-  //       .collection("myFollowings")
-  //       .get();
-  //
-  //   List<UserResult> list = [];
-  //
-  //   snapshot.docs.forEach((doc) async {
-  //     if(doc.exists){
-  //       String id = doc.id;
-  //       DocumentSnapshot userDoc = await usersRef.doc(id).get();
-  //       print("data is: " + userDoc.data().toString());
-  //       customUser user = customUser.fromDocument(userDoc);
-  //       UserResult result = UserResult(user);
-  //
-  //       setState(() {
-  //         print("added");
-  //         followingsList.add(result);
-  //       });
-  //     }
-  //   });
-  //   print("the list is : " + list.toString());
-  //
-  //
-  // }
-
-
 
   Future<List<UserResult>> getPeople()async{
 
@@ -92,7 +40,6 @@ class _showFollowers_FollowingsState extends State<showFollowers_Followings> {
       String id = element.id;
 
       DocumentSnapshot userDoc = await usersRef.doc(id).get();
-      print(userDoc.data());
 
       customUser user = customUser.fromDocument(userDoc);
       UserResult result = UserResult(user);
@@ -101,7 +48,6 @@ class _showFollowers_FollowingsState extends State<showFollowers_Followings> {
     }
 
 
-  print("returning");
     return returnList;
   }
 
@@ -126,7 +72,6 @@ class _showFollowers_FollowingsState extends State<showFollowers_Followings> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
 
-              print("data = " + snapshot.data.toString());
               return ListView(
                 padding: EdgeInsets.all(5),
                 children: snapshot.data,
