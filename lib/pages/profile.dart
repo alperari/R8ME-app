@@ -6,6 +6,7 @@ import 'package:cs310/crashlytics.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/showFollowers_Followings.dart';
 import 'package:cs310/pages/search.dart';
+import 'package:cs310/pages/showProfilePicture.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/pages/edit_profile.dart";
@@ -406,15 +407,25 @@ class _ProfileState extends State<Profile> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Container(
-                              width: 50.0,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: CachedNetworkImageProvider(widget.currentUser.photo_URL),
-                                    fit: BoxFit.cover),
+                            GestureDetector(
+                              child: Container(
+                                width: 50.0,
+                                height: 50.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: CachedNetworkImageProvider(widget.currentUser.photo_URL),
+                                      fit: BoxFit.cover),
+                                ),
                               ),
+                              onTap: (){
+                                //show profile picture
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => showProfilePicture(currentUserID: widget.currentUser.userID)));
+
+                              },
                             ),
 
 
