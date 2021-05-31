@@ -75,6 +75,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         .doc(commentID)
         .set({
           "commentID": commentID,
+          "postOwnerID":ownerID,
           "userID" : currentUserOnPage.userID,
           "username" : currentUserOnPage.username,
           "avatarURL" : currentUserOnPage.photo_URL,
@@ -91,6 +92,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           .doc(commentID)
           .set({
         "commentID": commentID,
+        "postOwnerID" : ownerID,
         "type": "comment",
         "comment_text" : _commentController.text,
         "username": currentUser.username,

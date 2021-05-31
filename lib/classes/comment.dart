@@ -8,8 +8,8 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class Comment{
   final String commentID;
-  final correspondingPostID;
-
+  final String correspondingPostID;
+  final String postOwnerID;
   final String userID;
   final String username;
   final String avatarURL;
@@ -20,6 +20,8 @@ class Comment{
   Comment({
     this.commentID,
     this.correspondingPostID,
+    this.postOwnerID,
+
     this.userID,
     this.username,
     this.avatarURL,
@@ -32,7 +34,7 @@ class Comment{
     return Comment(
       commentID: myDoc.data()["commentID"],
       correspondingPostID: postID,
-
+      postOwnerID: myDoc.data()["postOwnerID"],
       userID: myDoc.data()["userID"],
       username: myDoc.data()["username"],
       avatarURL: myDoc.data()["avatarURL"],
@@ -77,11 +79,13 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
 
     //delete from feed items
     DocumentSnapshot snapshot2 = await activityFeedRef
-      .doc(mycomment.userID)
+      .doc(mycomment.postOwnerID)
       .collection("feedItems")
       .doc(mycomment.commentID)
       .get();
+
     if(snapshot2.exists){
+      print("deleting" + snapshot.data().toString());
       snapshot2.reference.delete();
     }
   }

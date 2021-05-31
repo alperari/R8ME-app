@@ -282,116 +282,139 @@ class _PostState extends State<Post> {
       ),
     );
   }
-  buildPostFooter() {
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.favorite_rounded),
-                  iconSize: 30,
-                  color: fillHeart ? Colors.red : Colors.grey[700],
-                  onPressed: (){
-                    print("tapped on like!");
-                    Like();
-                  },
-                ),
-                Container(
-                  child: Text(
-                    "$likeCount",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.thumb_down_rounded),
-                  iconSize: 30,
-                  color: fillThumb==true ? Colors.blueAccent : Colors.grey[700] ,
-                  onPressed: (){
-                    print("tapped on dislike!");
-                    Dislike();
-                  },
-                ),
-                Container(
-                  child: Text(
-                    "$dislikeCount",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-             Row(
-               children: [
-                 IconButton(
-                   icon: Icon(Icons.trending_up_rounded),
-                   iconSize: 34,
-                   color: Colors.grey[700],
-                   onPressed: (){
-                     print("tapped on dislike!");
-                   },
-                 ),
-                 Container(
-                   child: Text(
-                     num.parse((rate*100).toStringAsFixed(2)).toString(),
-                     style: TextStyle(
-                       fontSize: 30,
-                       color: Colors.black,
-                       fontWeight: FontWeight.bold,
-                     ),
-                   ),
-                 ),
-               ],
-             ),
-            IconButton(
-              icon: Icon(Icons.chat_rounded),
-              iconSize: 30,
-              color: Colors.grey[700],
-              onPressed: (){
-                GoToComments(
-                  context,
-                  postID: postID,
-                  ownerID: ownerID,
-                  mediaURL: mediaURL
-                );
-                print("tapped on comment!");
-              },
-            ),
 
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(left: 20.0),
-              child: Text(
-                "$username  ",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
+  Future<bool> checkComment()async{
+    QuerySnapshot snapshot = await commentsRef
+        .doc(postID)
+        .collection("comments")
+        .where("userID", isEqualTo: authUser.userID).get();
+
+    if(snapshot.docs.length != 0){
+      return true;
+    }
+    return false;
+  }
+
+  buildPostFooter() {
+    return FutureBuilder(
+      future: checkComment(),
+      builder: (context,snapshot){
+        if(!snapshot.hasData){
+          return LinearProgressIndicator();
+        }
+        else{
+          return Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.favorite_rounded),
+                        iconSize: 30,
+                        color: fillHeart ? Colors.red : Colors.grey[700],
+                        onPressed: (){
+                          print("tapped on like!");
+                          Like();
+                        },
+                      ),
+                      Container(
+                        child: Text(
+                          "$likeCount",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.thumb_down_rounded),
+                        iconSize: 30,
+                        color: fillThumb==true ? Colors.blueAccent : Colors.grey[700] ,
+                        onPressed: (){
+                          print("tapped on dislike!");
+                          Dislike();
+                        },
+                      ),
+                      Container(
+                        child: Text(
+                          "$dislikeCount",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.trending_up_rounded),
+                        iconSize: 34,
+                        color: Colors.grey[700],
+                        onPressed: (){
+                          print("tapped on dislike!");
+                        },
+                      ),
+                      Container(
+                        child: Text(
+                          num.parse((rate*100).toStringAsFixed(2)).toString(),
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.chat_rounded),
+                    iconSize: 30,
+                    color: snapshot.data == true ? Colors.blue[700] : Colors.grey[700],
+                    onPressed: (){
+                      GoToComments(
+                          context,
+                          postID: postID,
+                          ownerID: ownerID,
+                          mediaURL: mediaURL
+                      );
+                      print("tapped on comment!");
+                    },
+                  ),
+
+                ],
               ),
-            ),
-            Expanded(child: Text(description))
-          ],
-        ),
-        SizedBox(height: 5,),
-        Divider(thickness: 3,),
-      ],
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 20.0),
+                    child: Text(
+                      "$username  ",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Text(description))
+                ],
+              ),
+              SizedBox(height: 5,),
+              Divider(thickness: 3,),
+            ],
+          );
+        }
+      }
     );
   }
 
@@ -476,7 +499,6 @@ class _PostState extends State<Post> {
         "rate" : calculateRate(likeCount, dislikeCount)
 
       });
-      addDislikeToActivityFeed();
     }
 
     //if it is not liked, then like on tap
@@ -502,6 +524,7 @@ class _PostState extends State<Post> {
         });
 
       });
+      addDislikeToActivityFeed();
     }
   }
 

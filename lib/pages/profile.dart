@@ -569,7 +569,7 @@ class _ProfileState extends State<Profile> {
                                   children: <Widget>[
 
                                     SizedBox(width: 4,),
-                                    Text(widget.currentUser.rate.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                    Text((widget.currentUser.rate*100).toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                         fontFamily: "Roboto", fontSize: 24
                                     ),)
                                   ],
