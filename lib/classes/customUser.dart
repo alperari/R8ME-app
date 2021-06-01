@@ -13,6 +13,8 @@ class customUser
   int followings_count;
   double rate;
 
+  bool public;
+
   //POSTS below
 
   //Constructor
@@ -26,6 +28,8 @@ class customUser
     this.followers_count = mymap==null ? 0 : mymap["followers"];
     this.followings_count = mymap==null ? 0 : mymap["followings"];
     this.rate = mymap==null ? 0 : mymap["rate"];
+
+    this.public = mymap==null ? true: mymap["public"];
   }
 
   customUser.def({
@@ -36,7 +40,8 @@ class customUser
     this.bio,
     this.followers_count,
     this.followings_count,
-    this.rate
+    this.rate,
+    this.public,
   });
 
   factory customUser.fromDocument(DocumentSnapshot doc) {
@@ -49,7 +54,9 @@ class customUser
 
       followers_count: doc.data()["followers"],
       followings_count: doc.data()["followings"],
-      rate : doc.data()["rate"].toDouble()
+      rate : doc.data()["rate"].toDouble(),
+
+      public: doc.data()["public"],
     );
   }
 }

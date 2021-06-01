@@ -233,6 +233,8 @@ class _EditProfileState extends State<EditProfile> {
       "followings": widget.currentUser.followings_count,
       "followers": widget.currentUser.followers_count,
       "rate": widget.currentUser.rate,
+
+      "public": widget.currentUser.public,
     };
 
     _bioController.text = widget.currentUser.bio;
@@ -265,7 +267,7 @@ class _EditProfileState extends State<EditProfile> {
             ),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => Settings()));
+                  builder: (BuildContext context) => Settings(currentUser: widget.currentUser)));
             },
           ),
         ],

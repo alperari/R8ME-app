@@ -1,19 +1,36 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cs310/classes/customUser.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:cs310/initial_routes//homepage.dart' as homepage;
-
-final _auth = homepage.auth;
+import 'package:cs310/initial_routes//homepage.dart';
 
 
 class Settings extends StatefulWidget {
+
+  Settings({this.currentUser});
+  final customUser currentUser;
+
   @override
   _SettingsState createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
 
-  bool switchState = false;
+
+  Future<void>checkPublic() async{
+    DocumentSnapshot snapshot = await usersRef
+        .doc(widget.currentUser.userID)
+        .get();
+
+    if(snapshot.exists){
+      print("returning");
+
+      return snapshot.data()["public"];
+    }
+    return true;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +110,7 @@ class _SettingsState extends State<Settings> {
             buildNotificationOptionRow("Account activity", true),
             buildNotificationOptionRow("Opportunity", false),
             SizedBox(
-              height: 50,
+              height: 20,
             ),
 
             Center(
@@ -103,19 +120,33 @@ class _SettingsState extends State<Settings> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("Public"),
-                      CupertinoSwitch(
-                        value: switchState,
-                        onChanged: (bool val){
-                          setState(() {
-                            switchState = val;
-                          });
+                      FutureBuilder(
+                        future: checkPublic(),
+                        builder: (context,snapshot){
+                          if(!snapshot.hasData){
+                            return Container(child:Text("Loading..."));
+                          }
+                          else{
+                            bool public = snapshot.data;
+                            print(snapshot.data);
+                            return  CupertinoSwitch(
+                                value: !public,
+                                activeColor: Colors.deepPurple,
+                                trackColor: Colors.lightGreen,
+                                onChanged: (bool val){
+                                  setState(() {
+                                    public = !val;
+                                  });
+                                }
+                            );
+                          }
                         }
                       ),
                       Text("Private"),
                     ],
                   ),
 
-                  SizedBox(height:10),
+                  SizedBox(height:20),
 
                   OutlineButton(
                     padding: EdgeInsets.symmetric(horizontal: 40),
@@ -127,7 +158,7 @@ class _SettingsState extends State<Settings> {
                             fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
 
                     onPressed: () async {
-                      final User user = await _auth.currentUser;
+                      final User user = await auth.currentUser;
                       if (user == null) {
 //6
                         Scaffold.of(context).showSnackBar(const SnackBar(
@@ -135,7 +166,7 @@ class _SettingsState extends State<Settings> {
                         ));
                         return;
                       }
-                      await _auth.signOut();
+                      await auth.signOut();
 
                       Navigator.pushNamed(context, "/welcomescreen");
 

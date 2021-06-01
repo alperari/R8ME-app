@@ -14,6 +14,8 @@ void createUser(User myuser) {
         "followings": 0,
         "followers": 0,
         "rate": 0,
+
+        "public": true,
       }
   );
 }
@@ -39,6 +41,8 @@ void updateUserById({String Uid, Map<String,dynamic> data}) async {
           "followings": data["followings"],
           "followers": data["followers"],
           "rate": data["rate"],
+
+          "public" : data["public"],
         }
         );
   }
