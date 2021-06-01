@@ -12,6 +12,9 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+
+  bool switchState = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,29 +97,52 @@ class _SettingsState extends State<Settings> {
             ),
 
             Center(
-              child: OutlineButton(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Public"),
+                      CupertinoSwitch(
+                        value: switchState,
+                        onChanged: (bool val){
+                          setState(() {
+                            switchState = val;
+                          });
+                        }
+                      ),
+                      Text("Private"),
+                    ],
+                  ),
 
-                child: Text("SIGN OUT",
-                    style: TextStyle(
-                        fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
+                  SizedBox(height:10),
 
-                onPressed: () async {
-                  final User user = await _auth.currentUser;
-                  if (user == null) {
+                  OutlineButton(
+                    padding: EdgeInsets.symmetric(horizontal: 40),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+
+                    child: Text("SIGN OUT",
+                        style: TextStyle(
+                            fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
+
+                    onPressed: () async {
+                      final User user = await _auth.currentUser;
+                      if (user == null) {
 //6
-                    Scaffold.of(context).showSnackBar(const SnackBar(
-                      content: Text('No one has signed in.'),
-                    ));
-                    return;
-                  }
-                  await _auth.signOut();
+                        Scaffold.of(context).showSnackBar(const SnackBar(
+                          content: Text('No one has signed in.'),
+                        ));
+                        return;
+                      }
+                      await _auth.signOut();
 
-                  Navigator.pushNamed(context, "/welcomescreen");
+                      Navigator.pushNamed(context, "/welcomescreen");
 
-                },
+                    },
+                  ),
+                  SizedBox(height: 20,),
+                ],
               ),
             )
           ],

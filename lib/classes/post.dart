@@ -41,6 +41,7 @@ class Post extends StatefulWidget {
 
   final double rate;
 
+
   //CONSTRUCTOR
   Post({
     this.postID,
@@ -295,11 +296,20 @@ class _PostState extends State<Post> {
     return false;
   }
 
+  Future<int> countComment()async {
+    QuerySnapshot snapshot = await commentsRef
+        .doc(postID)
+        .collection("comments")
+        .get();
+
+    return snapshot.size;
+  }
+
   buildPostFooter() {
     return FutureBuilder(
-      future: checkComment(),
+      future: Future.wait([checkComment(), countComment()]),
       builder: (context,snapshot){
-        if(!snapshot.hasData){
+        if(!snapshot.hasData){   //0=check  1=count
           return LinearProgressIndicator();
         }
         else{
@@ -368,7 +378,7 @@ class _PostState extends State<Post> {
                         child: Text(
                           num.parse((rate*100).toStringAsFixed(2)).toString(),
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 25,
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
@@ -376,19 +386,33 @@ class _PostState extends State<Post> {
                       ),
                     ],
                   ),
-                  IconButton(
-                    icon: Icon(Icons.chat_rounded),
-                    iconSize: 30,
-                    color: snapshot.data == true ? Colors.blue[700] : Colors.grey[700],
-                    onPressed: (){
-                      GoToComments(
-                          context,
-                          postID: postID,
-                          ownerID: ownerID,
-                          mediaURL: mediaURL
-                      );
-                      print("tapped on comment!");
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.chat_rounded),
+                        iconSize: 30,
+                        color: snapshot.data[0] == true ? Colors.blue[700] : Colors.grey[700],
+                        onPressed: (){
+                          GoToComments(
+                              context,
+                              postID: postID,
+                              ownerID: ownerID,
+                              mediaURL: mediaURL
+                          );
+                          print("tapped on comment!");
+                        },
+                      ),
+                      Container(
+                        child: Text(
+                          "${snapshot.data[1]}",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
                 ],
