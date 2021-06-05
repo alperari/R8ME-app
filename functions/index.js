@@ -167,3 +167,55 @@ exports.onUnfollow_Remove_Posts_From_Timeline = functions.firestore
        });
      });
 
+
+//update user's rate on change of posts' like and dislike counts
+exports.onChangeLike_updateUserRate = functions.firestore
+     .document("posts/{userID}/user_posts/{postID}")
+     .onUpdate(async (change,context)=>{
+      
+      const userID = context.params.userID;
+      const postID = context.params.postID;
+
+      const postBefore = change.before.data();
+      const postAfter = change.after.data();
+      
+      const usersRef = admin
+       .firestore()
+       .collection("users");
+
+      const beforeLikeCount = postBefore["likeCount"];
+      const beforeDislikeCount = postBefore["dislikeCount"];
+
+      const afterLikeCount = postAfter["likeCount"];
+      const afterDislikeCount = postAfter["dislikeCount"];
+
+
+      var likes=0;
+      var dislikes=0;
+
+      const querySnapshot = await admin
+        .firestore()
+        .collection("posts")
+        .doc(userID)
+        .collection("user_posts")
+        .get();
+
+      querySnapshot.forEach((doc)=>{
+        likes += doc.data()["likeCount"];
+        dislikes += doc.data()["dislikeCount"];
+      });
+      
+      var rate = likes/(likes+dislikes);
+
+
+      if(beforeLikeCount != afterLikeCount || 
+        beforeDislikeCount != afterDislikeCount){
+          //count all likes and dislikes
+          usersRef.doc(userID).update({
+            "rate": rate
+          });
+          console.log("updated user", userID, "with rate with",rate);
+      }
+
+
+     });

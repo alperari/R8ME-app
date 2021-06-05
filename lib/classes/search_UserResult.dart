@@ -145,7 +145,15 @@ class _UserResultState extends State<UserResult> {
                           child: Container(
                             padding: EdgeInsets.all(5),
                             color: Colors.lightGreen,
-                            child: Icon(Icons.add)
+                            child: Container(
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                  "Follow",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  ),
+                              )
+                            ),
                           ),
                           onTap: () async{
                             await Follow();
@@ -158,8 +166,17 @@ class _UserResultState extends State<UserResult> {
                           child: Container(
                               padding: EdgeInsets.all(5),
                               color: Colors.red[300],
-                              child: Icon(Icons.clear_outlined)
+                              child: Container(
+                                  padding: EdgeInsets.all(5),
+                                  child: Text(
+                                    "Unfollow",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  )
+                              ),
                           ),
+
                           onTap: () async{
                             await Unfollow();
 

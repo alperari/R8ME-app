@@ -5,6 +5,7 @@ import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/commentsScreen.dart';
 import 'package:cs310/pages/editPost_screen.dart';
 import 'package:cs310/pages/profile.dart';
+import 'package:cs310/pages/showLikers_Dislikers.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
@@ -109,7 +110,7 @@ class Post extends StatefulWidget {
       return 0.0;
     }
     else if(likeCount != 0 && dislikeCount == 0){
-      return likeCount.toDouble();
+      return 1.0;
     }
     else if(likeCount != 0 && dislikeCount != 0){
       return likeCount/(dislikeCount+likeCount);
@@ -186,7 +187,7 @@ class _PostState extends State<Post> {
       return 0.0;
     }
     else if(likeCount != 0 && dislikeCount == 0){
-      return likeCount.toDouble();
+      return 1.0;
     }
     else if(likeCount != 0 && dislikeCount != 0){
       return likeCount/(dislikeCount+likeCount);
@@ -223,7 +224,7 @@ class _PostState extends State<Post> {
       future: usersRef.doc(ownerID).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return CircularProgressIndicator();
+          return LinearProgressIndicator();
         }
         customUser ownerUser = customUser.fromDocument(snapshot.data);
         return Row(
@@ -329,7 +330,7 @@ class _PostState extends State<Post> {
                           Like();
                         },
                       ),
-                      Container(
+                      GestureDetector(
                         child: Text(
                           "$likeCount",
                           style: TextStyle(
@@ -338,6 +339,13 @@ class _PostState extends State<Post> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => showLikers_Dislikers(ownerID: ownerID, postID: postID,whichList: "Likers",)));
+
+                        },
                       ),
                     ],
                   ),
@@ -352,7 +360,7 @@ class _PostState extends State<Post> {
                           Dislike();
                         },
                       ),
-                      Container(
+                      GestureDetector(
                         child: Text(
                           "$dislikeCount",
                           style: TextStyle(
@@ -361,6 +369,13 @@ class _PostState extends State<Post> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => showLikers_Dislikers(ownerID: ownerID, postID: postID,whichList: "Dislikers",)));
+
+                        },
                       ),
                     ],
                   ),
@@ -592,6 +607,7 @@ class _PostState extends State<Post> {
 
 
   ShowOptions(BuildContext mainContext) {
+
     return showDialog(
         context: mainContext,
         builder: (context) {

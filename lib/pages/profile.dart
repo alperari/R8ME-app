@@ -158,43 +158,11 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  Future<void> calculateOverallRate() async {
-    int likeCount = 0;
-    int dislikeCount = 0;
-
-    await postsRef
-        .doc(currentUser.userID)
-        .collection("user_posts").get().then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((row) {
-        likeCount += row.data()["likeCount"].toInt();
-        dislikeCount += row.data()["dislikeCount"].toInt();
-
-      });
-    });
-
-    double newRate;
-
-    if((likeCount == 0 && dislikeCount == 0) || (likeCount == 0 && dislikeCount != 0)){
-      newRate = 0.0;
-    }
-    else if(likeCount != 0 && dislikeCount == 0){
-      newRate = 100;
-    }
-    else if(likeCount != 0 && dislikeCount != 0){
-      newRate= likeCount / (likeCount+dislikeCount);
-      newRate = num.parse(newRate.toStringAsFixed(2));
-    }
-
-    //update current rate
-    currentUser.rate = newRate;
-    print("updated currentUser locally");
-
-    //update in the database
-    usersRef.doc(currentUser.userID).update({
-      "rate" : newRate
-    });
-
-    print("updated in the database");
+  Future<double> getRate() async {
+    DocumentSnapshot snapshot = await usersRef.doc(currentUser.userID).get();
+    var rate = snapshot.data()["rate"];
+    rate = num.parse(rate.toStringAsFixed(2));
+    return rate;
   }
 
   build_grid_or_scrollable_button(){
@@ -225,13 +193,6 @@ class _ProfileState extends State<Profile> {
               ? Colors.deepPurple
               : Colors.grey,
         ),
-        IconButton(
-          onPressed: ()async{
-            customCrashLog("Tapped on crash button");
-          },
-          icon: Icon(Icons.block_outlined),
-          color: Colors.red,
-        )
       ],
     );
   }
@@ -360,7 +321,7 @@ class _ProfileState extends State<Profile> {
       setFollowingsCount();
 
 
-      calculateOverallRate();
+      //calculateOverallRate();
       check_curentlyFollowing();
 
       enableCrashlytics();
@@ -569,9 +530,17 @@ class _ProfileState extends State<Profile> {
                                   children: <Widget>[
 
                                     SizedBox(width: 4,),
-                                    Text((widget.currentUser.rate*100).toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
-                                        fontFamily: "Roboto", fontSize: 24
-                                    ),)
+                                    FutureBuilder(
+                                      future: getRate(),
+                                      builder: (context,snapshot){
+                                        if(snapshot.hasData){
+                                          return Text((snapshot.data*100).toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
+                                              fontFamily: "Roboto", fontSize: 24
+                                          ),);
+                                        }
+                                        return CircularProgressIndicator();
+                                      },
+                                    ),
                                   ],
                                 ),
 
