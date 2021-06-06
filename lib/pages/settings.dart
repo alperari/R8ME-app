@@ -18,17 +18,14 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
 
 
-  Future<void>checkPublic() async{
+  Future<void>changePublic(bool val) async{
     DocumentSnapshot snapshot = await usersRef
         .doc(widget.currentUser.userID)
         .get();
 
     if(snapshot.exists){
-      print("returning");
-
-      return snapshot.data()["public"];
+      snapshot.reference.update({"public": val});
     }
-    return true;
   }
 
 
@@ -120,23 +117,22 @@ class _SettingsState extends State<Settings> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("Public"),
-                      FutureBuilder(
-                        future: checkPublic(),
+                      StreamBuilder(
+                        stream: usersRef.doc(widget.currentUser.userID).snapshots(),
                         builder: (context,snapshot){
                           if(!snapshot.hasData){
                             return Container(child:Text("Loading..."));
                           }
                           else{
-                            bool public = snapshot.data;
-                            print(snapshot.data);
+                            bool public = snapshot.data.data()["public"];
+                            print(public);
                             return  CupertinoSwitch(
                                 value: !public,
                                 activeColor: Colors.deepPurple,
                                 trackColor: Colors.lightGreen,
                                 onChanged: (bool val){
-                                  setState(() {
-                                    public = !val;
-                                  });
+                                  print(val);
+                                  changePublic(!val);
                                 }
                             );
                           }
