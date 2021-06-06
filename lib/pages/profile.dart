@@ -56,7 +56,6 @@ class _ProfileState extends State<Profile> {
         .doc(widget.currentUser.userID)
         .collection("myFollowings")
         .get().then((doc) {
-          print("asd");
       setState(() {
         widget.currentUser.followings_count = doc.size;
       });
@@ -119,6 +118,38 @@ class _ProfileState extends State<Profile> {
               'assets/nocontent.jpg',
             ),
 
+            SizedBox(height: 20,)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container buildPrivateContent(){
+    return Container(
+      child: Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            Image.asset(
+              'assets/private_acc.jpg',
+              fit:BoxFit.contain,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("THIS ACCOUNT IS PRIVATE!",
+                style: TextStyle(
+                  fontSize: 23,
+                  color: Colors.grey[700]
+                ),),
+                Text("FOLLOW IN ORDER TO SEE THE CONTENT!",
+                style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.grey[700]
+                ),),
+              ],
+            ),
             SizedBox(height: 20,)
           ],
         ),
@@ -310,6 +341,20 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Widget buildContent(bool public){
+    if(public || isFollowing || widget.currentUser.userID == authUser.userID){
+      return Column(
+        children: [
+          build_grid_or_scrollable_button(),
+          Divider(thickness: 3,),
+          buildProfilePosts(),
+        ],
+      );
+    }
+    else{
+      return buildPrivateContent();
+    }
+  }
   @override
     void initState() {
       // TODO: implement initState
@@ -449,7 +494,6 @@ class _ProfileState extends State<Profile> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
                                     Icon(Icons.image, color: Colors.black, size: 30,),
-                                    SizedBox(width: 4,),
                                     Text(postCount.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                         fontFamily: "Roboto", fontSize: 24
                                     ),)
@@ -467,15 +511,7 @@ class _ProfileState extends State<Profile> {
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      GestureDetector(
-                                        child: Icon(Icons.check_box,size: 30, color: Colors.black),
-                                        onTap: (){
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followings",)));
-                                        },
-                                      ),
+                                      Icon(Icons.check_box, color: Colors.black, size: 30,),
                                       Text(widget.currentUser.followings_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                           fontFamily: "Roboto", fontSize: 24
                                       ),)
@@ -488,10 +524,12 @@ class _ProfileState extends State<Profile> {
                                 ],
                               ),
                               onTap: (){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followings",)));
+                                if(widget.currentUser.public || isFollowing || widget.currentUser.userID == authUser.userID){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followings",)));
+                                }
                               },
                             ),
 
@@ -502,7 +540,6 @@ class _ProfileState extends State<Profile> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Icon(Icons.favorite, color: Colors.black, size: 30,),
-                                      SizedBox(width: 4,),
                                       Text(widget.currentUser.followers_count.toString(), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,
                                           fontFamily: "Roboto", fontSize: 24
                                       ),)
@@ -515,11 +552,14 @@ class _ProfileState extends State<Profile> {
                                 ],
                               ),
                               onTap: (){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followers",)));
-                              },
+                                if(widget.currentUser.public || isFollowing || widget.currentUser.userID == authUser.userID){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => showFollowers_Followings(currentUser: widget.currentUser,whichList: "Followers",)));
+
+                                  }
+                                },
                             ),
 
 
@@ -555,9 +595,10 @@ class _ProfileState extends State<Profile> {
 
                       //Posts will be displayed here
                       Divider(thickness: 3,),
-                      build_grid_or_scrollable_button(),
-                      Divider(thickness: 3,),
-                      buildProfilePosts(),
+
+                      buildContent(widget.currentUser.public)
+
+
                     ],
                   ),
 
