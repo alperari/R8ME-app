@@ -612,6 +612,7 @@ class _PostState extends State<Post> {
         context: mainContext,
         builder: (context) {
           return SimpleDialog(
+
             title: Text("Do you want to remove post?"),
             children: <Widget>[
               SimpleDialogOption(

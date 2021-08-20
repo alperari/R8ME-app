@@ -125,13 +125,11 @@ class _SettingsState extends State<Settings> {
                           }
                           else{
                             bool public = snapshot.data.data()["public"];
-                            print(public);
                             return  CupertinoSwitch(
                                 value: !public,
                                 activeColor: Colors.deepPurple,
                                 trackColor: Colors.lightGreen,
                                 onChanged: (bool val){
-                                  print(val);
                                   changePublic(!val);
                                 }
                             );
