@@ -9,9 +9,9 @@ import 'package:tiktoklikescroller/tiktoklikescroller.dart';
 
 class Timeline extends StatefulWidget {
   
-  Timeline({this.authUser});
-  final customUser authUser;
-  
+  Timeline({this.auth});
+  final customUser auth;
+
   @override
   _TimelineState createState() => _TimelineState();
 }
@@ -21,7 +21,7 @@ class _TimelineState extends State<Timeline> {
 
   Future<void> getPosts() async{
     QuerySnapshot snapshot = await timelineRef
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .collection("timelinePosts")
         .orderBy("time", descending: true)
         .get();

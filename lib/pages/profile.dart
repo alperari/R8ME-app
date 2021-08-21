@@ -5,15 +5,12 @@ import 'package:cs310/classes/postTile.dart';
 import 'package:cs310/crashlytics.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/showFollowers_Followings.dart';
-import 'package:cs310/pages/search.dart';
 import 'package:cs310/pages/showProfilePicture.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/pages/edit_profile.dart";
-import "package:firebase_auth/firebase_auth.dart";
 import "package:cs310/classes/customUser.dart";
 
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
 
 import '../initial_routes/homepage.dart';
 
@@ -66,11 +63,11 @@ class _ProfileState extends State<Profile> {
 
 
   check_curentlyFollowing() async{
-    if(authUser.userID != widget.currentUser.userID){
+    if(auth.currentUser.uid != widget.currentUser.userID){
       DocumentSnapshot snapshot = await followers_table_Ref
           .doc(widget.currentUser.userID)
           .collection("myFollowers")
-          .doc(authUser.userID)
+          .doc(auth.currentUser.uid)
           .get().then((doc) {
         if(doc.exists){
           setState(() {
@@ -233,7 +230,7 @@ class _ProfileState extends State<Profile> {
 
     //add authedUser's followings the widget.currentUser.userID
     followings_table_Ref
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .collection("myFollowings")
         .doc(widget.currentUser.userID)
         .set({});
@@ -242,7 +239,7 @@ class _ProfileState extends State<Profile> {
     followers_table_Ref
         .doc(widget.currentUser.userID)
         .collection("myFollowers")
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .set({});
 
     //add this activity to feedItem of user being followed, in this case its currentUser
@@ -252,9 +249,9 @@ class _ProfileState extends State<Profile> {
         .add({
       "type": "follow",
       "ownerID": widget.currentUser.userID,
-      "username": authUser.username,
-      "userID": authUser.userID,
-      "photo_URL": authUser.photo_URL,
+      "username": auth.currentUser.uid,
+      "userID": auth.currentUser.uid,
+      "photo_URL": auth.currentUser.uid,
       "time": DateTime.now(),
     });
     setState(() {
@@ -266,7 +263,7 @@ class _ProfileState extends State<Profile> {
 
     //remove widget.currentUser.userID from autherUser's followings
     followings_table_Ref
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .collection("myFollowings")
         .doc(widget.currentUser.userID)
         .get().then((doc) {
@@ -279,7 +276,7 @@ class _ProfileState extends State<Profile> {
     followers_table_Ref
         .doc(widget.currentUser.userID)
         .collection("myFollowers")
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .get().then((doc) {
           if(doc.exists){
             doc.reference.delete();
@@ -318,7 +315,7 @@ class _ProfileState extends State<Profile> {
   Widget buildButton_Edit_or_Follow(){
     //this will show the button if the currentUserOnPage is the owner user.
     //otherwise it should show the button "Follow" if not following,  "Unfollow" otherwise
-    if(authUser.userID == widget.currentUser.userID){
+    if(auth.currentUser.uid == widget.currentUser.userID){
       return FlatButton.icon(
           onPressed: (){
             Navigator.push(
@@ -342,7 +339,7 @@ class _ProfileState extends State<Profile> {
   }
 
   Widget buildContent(bool public){
-    if(public || isFollowing || widget.currentUser.userID == authUser.userID){
+    if(public || isFollowing || widget.currentUser.userID == auth.currentUser.uid){
       return Column(
         children: [
           build_grid_or_scrollable_button(),
@@ -379,13 +376,13 @@ class _ProfileState extends State<Profile> {
     return SafeArea(
       child: Stack(
         children: <Widget>[
-          SizedBox.expand(
-            child: Image.asset("assets/applogo.jpeg", fit: BoxFit.contain,),
+          Container(
+            height: MediaQuery.of(context).size.height*0.6,
+            color: Colors.red,
           ),
-
           DraggableScrollableSheet(
-            minChildSize: 0.1,
-            initialChildSize: 0.22,
+            minChildSize: 0.40,
+            initialChildSize: 0.5,
             builder: (context, scrollController){
               return SingleChildScrollView(
                 controller: scrollController,
@@ -449,7 +446,7 @@ class _ProfileState extends State<Profile> {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                  color: widget.currentUser.userID == authUser.userID ? Colors.white: (isFollowing==true ? Colors.redAccent[200] : Colors.green[300]),
+                                  color: widget.currentUser.userID == auth.currentUser.uid ? Colors.white: (isFollowing==true ? Colors.redAccent[200] : Colors.green[300]),
                                   borderRadius: BorderRadius.all(Radius.circular(10)),
                                   border: Border.all(
                                       width: 1
@@ -524,7 +521,7 @@ class _ProfileState extends State<Profile> {
                                 ],
                               ),
                               onTap: (){
-                                if(widget.currentUser.public || isFollowing || widget.currentUser.userID == authUser.userID){
+                                if(widget.currentUser.public || isFollowing || widget.currentUser.userID == auth.currentUser.uid){
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -552,7 +549,7 @@ class _ProfileState extends State<Profile> {
                                 ],
                               ),
                               onTap: (){
-                                if(widget.currentUser.public || isFollowing || widget.currentUser.userID == authUser.userID){
+                                if(widget.currentUser.public || isFollowing || widget.currentUser.userID == auth.currentUser.uid){
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(

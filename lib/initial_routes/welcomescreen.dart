@@ -28,10 +28,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _passwordController = TextEditingController();
   String mail;
   String pass;
-  bool _success = false;
 
+  String exceptionMessage = "";
 
   void _signInWithEmailAndPassword() async {
+
     final User user = (await myauth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
@@ -39,14 +40,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (user != null) {
       setState(() {
-        _success = true;
         mail = user.email;
-
-      });
-    } else {
-      setState(() {
-        print("fail");
-        _success = false;
+        exceptionMessage = "";
       });
     }
   }
@@ -56,7 +51,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if(myauth.currentUser != null)
       {
-        return HomePage(documentId: myauth.currentUser.uid, analytics: widget.analytics, observer: widget.observer);
+        return HomePage(currentUserID: myauth.currentUser.uid,);
       }
     else
       {
@@ -93,7 +88,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ],
                   ),
                   width: 300,
-                  height: 340,
+                  height: 370,
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Form(
@@ -202,7 +197,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     if(value.isEmpty) {
                                       return 'Please enter your password';
                                     }
-                                    if(value.length < 8) {
+                                    if(value.length < 6) {
                                       return 'Password must be at least 8 characters';
                                     }
                                     return null;
@@ -214,7 +209,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 10,),
+                          GestureDetector(
+                              child: Text(exceptionMessage, textAlign: TextAlign.center, style: GoogleFonts.fugazOne(fontSize: 16,color: Colors.deepPurple),),
+
+                          ),
+                          SizedBox(height: 15,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
@@ -227,17 +226,44 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                       _formKey.currentState.save();
 
                                       ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(content: Text('Logging in')));
+                                          .showSnackBar(SnackBar(content: Text('SINGING IN...')));
 
 
-                                      dynamic result = await myauth.signInWithEmailAndPassword(email: mail, password: pass);
+                                      try{
 
-                                      if(result == null) {
-                                        print('Login failed');
+                                        User user = (await myauth.signInWithEmailAndPassword(email: mail, password: pass)).user;
+                                        //SUCCESSFULL LOGIN
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              HomePage(currentUserID: user.uid),
+                                        ));
+
+
+                                      }on FirebaseAuthException catch  (e) {
+                                        if(e.code == "user-not-found"){
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(content: Text("USER NOT FOUND!")));
+                                          setState(() {
+                                            exceptionMessage = "USER NOT FOUND!";
+                                          });
+
+                                        }
+                                        else if(e.code == "wrong-password"){
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(content: Text('WRONG PASSWORD!')));
+                                          setState(() {
+                                            exceptionMessage = "WRONG PASSWORD!";
+                                          });
+
+                                        }
+                                        else{
+                                          print(e.code);
+                                          setState(() {
+                                            exceptionMessage = "UNEXPECTED ERROR!";
+                                          });
+                                        }
                                       }
-                                      else {
-                                        print('User logged in');
-                                      }
+
 
 
                                     }

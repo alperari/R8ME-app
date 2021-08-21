@@ -47,13 +47,13 @@ class _AppBaseState extends State<AppBase> {
 
     return MaterialApp(
       navigatorObservers: <NavigatorObserver>[AppBase.observer],
-      home: initial == "walkthrough" ? Walkthrough(analytics: AppBase.analytics, observer: AppBase.observer,) : HomePage(documentId: myauth.currentUser.uid, analytics: AppBase.analytics, observer: AppBase.observer,),
+      home: initial == "walkthrough" ? Walkthrough(analytics: AppBase.analytics, observer: AppBase.observer,) : HomePage(currentUserID: myauth.currentUser.uid),
       routes: {
         "/walkthrough": (context) => Walkthrough(analytics: AppBase.analytics, observer: AppBase.observer,),
         "/welcomescreen": (context) => WelcomeScreen(analytics: AppBase.analytics, observer: AppBase.observer,),
         "/loginscreen": (context) => LoginScreen(analytics: AppBase.analytics, observer: AppBase.observer,),
         "/registerscreen": (context) => RegisterScreen(analytics: AppBase.analytics, observer: AppBase.observer,),
-        "/homepage": (context) => HomePage(documentId: myauth.currentUser.uid, analytics: AppBase.analytics, observer: AppBase.observer,),
+        "/homepage": (context) => HomePage(currentUserID: myauth.currentUser.uid),
 
 
       },

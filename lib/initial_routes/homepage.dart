@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/pages/search.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,29 +29,25 @@ final FirebaseAuth auth = FirebaseAuth.instance;
 
 
 customUser currentUser;
-customUser authUser ;
 
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key key,this.documentId, this.analytics, this.observer}): super(key: key);
+  const HomePage({Key key,this.currentUserID}): super(key: key);
 
-  final String documentId;
-
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
+  final String currentUserID;
 
 
   @override
   Widget build(BuildContext context) {
 
     return FutureBuilder<DocumentSnapshot>(
-      future: usersRef.doc(documentId).get(),
+      future: usersRef.doc(currentUserID).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
 
         if (snapshot.connectionState == ConnectionState.done) {
 
-          return MyHomePageLoaded(doc: snapshot.data , analytics: analytics,observer: observer,);
+          return MyHomePageLoaded(doc: snapshot.data);
         }
 
         return Scaffold(
@@ -73,11 +68,9 @@ class HomePage extends StatelessWidget {
 class MyHomePageLoaded extends StatefulWidget {
 
   final DocumentSnapshot doc;
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
 
 
-  MyHomePageLoaded({this.doc,this.analytics,this.observer});
+  MyHomePageLoaded({this.doc});
 
   @override
   _MyHomePageLoadedState createState() => _MyHomePageLoadedState();
@@ -98,17 +91,11 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
     pageController.jumpToPage(pindex);
   }
 
-  Future<void> Analytics_setUserID(String UserID) async{
-    widget.analytics.setUserId(UserID);
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     currentUser = customUser.fromDocument(widget.doc);
-    authUser = customUser.fromDocument(widget.doc);
-    Analytics_setUserID(currentUser.userID);
-    Analytics_SetCurrentScreen();
 
     pageController = PageController();
 
@@ -120,11 +107,6 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
 
 
 
-
-
-  Future<void> Analytics_SetCurrentScreen() async{
-    await widget.analytics.setCurrentScreen(screenName: "Homepage Screen" , screenClassOverride: "homepage");
-  }
 
 
   @override
@@ -146,19 +128,19 @@ class _MyHomePageLoadedState extends State<MyHomePageLoaded> {
 
       ),
 
-      bottomNavigationBar: CupertinoTabBar(
+      bottomNavigationBar: BottomNavigationBar(
         iconSize: 34,
         backgroundColor: Colors.transparent,
         currentIndex: pageIndex,
         onTap: navigationTap,
-        activeColor: Colors.deepPurple,
-        inactiveColor: Colors.grey,
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey[600],
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.person)),
-          BottomNavigationBarItem(icon: Icon(Icons.home)),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle,size: 45)),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications_active_rounded)),
-          BottomNavigationBarItem(icon: Icon(Icons.search_rounded))
+          BottomNavigationBarItem(icon: Icon(Icons.person), title: Text("Profile")),
+          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("Timeline")),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle,size: 45), title: Text("Upload")),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications_active_rounded), title: Text("Activity")),
+          BottomNavigationBarItem(icon: Icon(Icons.search_rounded), title: Text("Search"))
 
         ],
       ),

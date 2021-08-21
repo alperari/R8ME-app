@@ -17,12 +17,10 @@ import 'package:path_provider/path_provider.dart';
 
 class EditProfile extends StatefulWidget {
 
-  const EditProfile({Key key, this.currentUser, this.analytics, this.observer}): super(key: key);
+  const EditProfile({Key key, this.currentUser}): super(key: key);
 
   final customUser currentUser;
 
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -166,10 +164,10 @@ class _EditProfileState extends State<EditProfile> {
       myfile = null;
       uploadingProgress = false;
     });
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomePage(documentId: widget.currentUser.userID,analytics: widget.analytics, observer: widget.observer,)));
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (BuildContext context) =>
+          HomePage(currentUserID: widget.currentUser.userID),
+    ));
   }
 
   Scaffold buildApprovingScreen(){
@@ -476,10 +474,10 @@ class _EditProfileState extends State<EditProfile> {
                             content: Text("Successfully Updated!"),);
                           ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage(documentId: widget.currentUser.userID, analytics: widget.analytics, observer: widget.observer,)));
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                HomePage(currentUserID: widget.currentUser.userID),
+                          ));
 
                         }
                       },

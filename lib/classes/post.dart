@@ -289,7 +289,7 @@ class _PostState extends State<Post> {
     QuerySnapshot snapshot = await commentsRef
         .doc(postID)
         .collection("comments")
-        .where("userID", isEqualTo: authUser.userID).get();
+        .where("userID", isEqualTo: auth.currentUser.uid).get();
 
     if(snapshot.docs.length != 0){
       return true;

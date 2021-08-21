@@ -135,10 +135,7 @@ class LoginScreenState extends State<LoginScreen> {
                       await _signInWithEmailAndPassword();
 
                       //wait to fetch user data then go to homepage..
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              HomePage(documentId: _userID, analytics: widget.analytics, observer: widget.observer,),
-                      ));
+
                     }
                   },
                   child: const Text('Submit'),

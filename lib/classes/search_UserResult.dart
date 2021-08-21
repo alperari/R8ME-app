@@ -34,7 +34,7 @@ class _UserResultState extends State<UserResult> {
   }
 
   Future<bool> checkFollowing()async{
-   DocumentSnapshot snapshot = await followings_table_Ref.doc(authUser.userID).collection("myFollowings").doc(widget.user.userID).get();
+   DocumentSnapshot snapshot = await followings_table_Ref.doc(auth.currentUser.uid).collection("myFollowings").doc(widget.user.userID).get();
    if(snapshot.exists){
      return true;
    }
@@ -45,7 +45,7 @@ class _UserResultState extends State<UserResult> {
 
     //add authedUser's followings the widget.currentUser.userID
     await followings_table_Ref
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .collection("myFollowings")
         .doc(widget.user.userID)
         .set({});
@@ -54,7 +54,7 @@ class _UserResultState extends State<UserResult> {
     await followers_table_Ref
         .doc(widget.user.userID)
         .collection("myFollowers")
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .set({});
 
     //add this activity to feedItem of user being followed, in this case its currentUser
@@ -64,9 +64,9 @@ class _UserResultState extends State<UserResult> {
         .add({
       "type": "follow",
       "ownerID": widget.user.userID,
-      "username": authUser.username,
-      "userID": authUser.userID,
-      "photo_URL": authUser.photo_URL,
+      "username": auth.currentUser.uid,
+      "userID": auth.currentUser.uid,
+      "photo_URL": auth.currentUser.uid,
       "time": DateTime.now(),
     });
     setState(() {
@@ -78,7 +78,7 @@ class _UserResultState extends State<UserResult> {
 
     //remove widget.user.userID from autherUser's followings
     await followings_table_Ref
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .collection("myFollowings")
         .doc(widget.user.userID)
         .get().then((doc) {
@@ -91,7 +91,7 @@ class _UserResultState extends State<UserResult> {
     await followers_table_Ref
         .doc(widget.user.userID)
         .collection("myFollowers")
-        .doc(authUser.userID)
+        .doc(auth.currentUser.uid)
         .get().then((doc) {
       if(doc.exists){
         doc.reference.delete();
@@ -114,7 +114,7 @@ class _UserResultState extends State<UserResult> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              if(authUser.userID != widget.user.userID){
+              if(auth.currentUser.uid != widget.user.userID){
                 showProfile(context);
               }
             },  //showProfile(context, profileId: user.id),
@@ -132,7 +132,7 @@ class _UserResultState extends State<UserResult> {
                 widget.user.bio,
                 style: TextStyle(color: Colors.black),
               ),
-              trailing: widget.user.userID == authUser.userID ? null :
+              trailing: widget.user.userID == auth.currentUser.uid ? null :
                   FutureBuilder(
                   future: checkFollowing(),
                   builder: (context,snapshot){
