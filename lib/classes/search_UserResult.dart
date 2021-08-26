@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cs310/classes/customDialogBox.dart';
 import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/targetProfile.dart';
@@ -106,23 +107,80 @@ class _UserResultState extends State<UserResult> {
 
 
 
+  BoxDecoration FollowingDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+      colors: [
+        Colors.deepPurple[400],
+        Colors.deepPurple,
+        Colors.deepPurple[600],
+        Colors.deepPurple[700],
+        Colors.deepPurple[800]
+      ],
+    ),
+    borderRadius: BorderRadius.circular(20),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(1),
+        spreadRadius: 5,
+        blurRadius: 10,
+        offset: Offset(0, 3), // changes position of shadow
+      ),
+    ],
+  );
+
+  BoxDecoration notFollowingDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+      colors: [
+        Colors.blue[500],
+        Colors.blue[600],
+        Colors.blue[800],
+        Colors.blue[900]
+      ],
+    ),
+    borderRadius: BorderRadius.circular(20),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(1),
+        spreadRadius: 5,
+        blurRadius: 10,
+        offset: Offset(0, 3), // changes position of shadow
+      ),
+    ],
+  );
+
+  BoxDecoration ownerDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+      colors: [
+        Colors.orange[600],
+        Colors.orange[700],
+        Colors.orange[800],
+        Colors.orange[900]
+      ],
+    ),
+    borderRadius: BorderRadius.circular(20),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(1),
+        spreadRadius: 5,
+        blurRadius: 10,
+        offset: Offset(0, 3), // changes position of shadow
+      ),
+    ],
+  );
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(8),
       margin: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(1),
-            spreadRadius: 5,
-            blurRadius: 10,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
+      decoration: auth.currentUser.uid != widget.user.userID ? (iFollow ? FollowingDecoration : notFollowingDecoration) : ownerDecoration,
       child: Column(
         children: <Widget>[
           GestureDetector(
@@ -132,20 +190,35 @@ class _UserResultState extends State<UserResult> {
               }
             },  //showProfile(context, profileId: user.id),
             child: ListTile(
-              leading: CircleAvatar(
-                  backgroundImage: NetworkImage(widget.user.photo_URL),
-                  radius: 25
+              leading: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(1),
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(0,0), // changes position of shadow
+                    ),
+                  ],
+                  shape: BoxShape.circle,
+                  color: Colors.white
+                ),
+                child: CircleAvatar(
+                    backgroundImage: NetworkImage(widget.user.photo_URL),
+                ),
               ),
               title: Text(
                 widget.user.username,
                 style:
-                GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold),
+                GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
                 widget.user.bio,
                 overflow: TextOverflow.ellipsis,
 
-                style: GoogleFonts.poppins(color: Colors.black),
+                style: GoogleFonts.poppins(color: Colors.white),
               ),
               trailing: widget.user.userID == auth.currentUser.uid ? null :
                   FutureBuilder(
@@ -157,35 +230,26 @@ class _UserResultState extends State<UserResult> {
                     else{
                       if(snapshot.data == false && !iFollow){
                         return GestureDetector(
-                          child: Container(
+                          child:Container(
                             width: 45,
                             height: 45,
-                            decoration: BoxDecoration(
-                              color: Colors.lightGreen,
-
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(Icons.person_add,),
+                            child:  Icon(Icons.person_add,),
                           ),
-                          onTap: () async{
-                            await Follow();
 
+                          onTap: () async{
+
+                            await Follow();
                           },
                         );
                       }
                       else {
                         return GestureDetector(
-                          child: Container(
+                          child:Container(
                             width: 45,
                             height: 45,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-
-                              shape: BoxShape.circle,
-                            ),
                             child: Icon(Icons.person_remove),
-
                           ),
+
 
                           onTap: () async{
                             await Unfollow();

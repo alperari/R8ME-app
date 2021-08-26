@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomDialogBox extends StatefulWidget {
   final String title, descriptions;
@@ -47,9 +48,9 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
             children: <Widget>[
               CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.lightGreen),),
               SizedBox(height: 15,),
-              Text(widget.title,style: TextStyle(color:Colors.black,fontSize: 22,fontWeight: FontWeight.w600),),
+              Text(widget.title,style: GoogleFonts.poppins(color:Colors.black,fontSize: 22,fontWeight: FontWeight.w600),),
               SizedBox(height: 15,),
-              Text(widget.descriptions,style: TextStyle(color:Colors.black,fontSize: 14),textAlign: TextAlign.center,),
+              Text(widget.descriptions,style: GoogleFonts.poppins(color:Colors.black,fontSize: 14),textAlign: TextAlign.center,),
               SizedBox(height: 22,),
 
             ],
