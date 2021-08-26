@@ -7,7 +7,6 @@ import 'package:cs310/pages/showFollowers_Followings.dart';
 import 'package:cs310/pages/showProfilePicture.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import "package:cs310/pages/edit_profile.dart";
 import "package:cs310/classes/customUser.dart";
 import 'package:google_fonts/google_fonts.dart';
 

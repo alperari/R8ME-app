@@ -17,8 +17,10 @@ CachedNetworkImage cachedNetworkImage_custom(mediaURL) {
     imageUrl: mediaURL,
     fit: BoxFit.cover,
     placeholder: (context, url) => Padding(
-      child: CircularProgressIndicator(),
-      padding: EdgeInsets.all(20.0),
+      child: Container(
+        color: Colors.grey[200],
+      ),
+      padding: EdgeInsets.all(0),
     ),
     errorWidget: (context, url, error) => Icon(Icons.error),
   );
@@ -270,15 +272,14 @@ class _PostState extends State<Post> {
         alignment: Alignment.center,
         children: <Widget>[
           Container(
-              height: MediaQuery.of(context).size.height-300,
-              width:  MediaQuery.of(context).size.width,
-              child: PhotoView(
-                imageProvider: CachedNetworkImageProvider(
-                    mediaURL,
-                    
+            height: 300,
+            child: FittedBox(
+               fit: BoxFit.cover,
+                child: CachedNetworkImage(
+                  imageUrl: mediaURL,
+
                 ),
-                backgroundDecoration: BoxDecoration(color:Colors.white),
-              ),
+            ),
           )
         ],
       ),
