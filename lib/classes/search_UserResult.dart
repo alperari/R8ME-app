@@ -3,6 +3,7 @@ import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -109,7 +110,19 @@ class _UserResultState extends State<UserResult> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(8),
-      color: Colors.grey[100],
+      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(1),
+            spreadRadius: 5,
+            blurRadius: 10,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
       child: Column(
         children: <Widget>[
           GestureDetector(
@@ -126,11 +139,13 @@ class _UserResultState extends State<UserResult> {
               title: Text(
                 widget.user.username,
                 style:
-                TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
                 widget.user.bio,
-                style: TextStyle(color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+
+                style: GoogleFonts.poppins(color: Colors.black),
               ),
               trailing: widget.user.userID == auth.currentUser.uid ? null :
                   FutureBuilder(
@@ -143,17 +158,14 @@ class _UserResultState extends State<UserResult> {
                       if(snapshot.data == false && !iFollow){
                         return GestureDetector(
                           child: Container(
-                            padding: EdgeInsets.all(5),
-                            color: Colors.lightGreen,
-                            child: Container(
-                              padding: EdgeInsets.all(5),
-                              child: Text(
-                                  "Follow",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold
-                                  ),
-                              )
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: Colors.lightGreen,
+
+                              shape: BoxShape.circle,
                             ),
+                            child: Icon(Icons.person_add,),
                           ),
                           onTap: () async{
                             await Follow();
@@ -164,17 +176,15 @@ class _UserResultState extends State<UserResult> {
                       else {
                         return GestureDetector(
                           child: Container(
-                              padding: EdgeInsets.all(5),
-                              color: Colors.red[300],
-                              child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  child: Text(
-                                    "Unfollow",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  )
-                              ),
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.person_remove),
+
                           ),
 
                           onTap: () async{

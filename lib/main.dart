@@ -52,7 +52,7 @@ class _AppBaseState extends State<AppBase> {
         "/walkthrough": (context) => Walkthrough(analytics: AppBase.analytics, observer: AppBase.observer,),
         "/welcomescreen": (context) => WelcomeScreen(analytics: AppBase.analytics, observer: AppBase.observer,),
         "/loginscreen": (context) => LoginScreen(analytics: AppBase.analytics, observer: AppBase.observer,),
-        "/registerscreen": (context) => RegisterScreen(analytics: AppBase.analytics, observer: AppBase.observer,),
+        "/registerscreen": (context) => RegisterScreen(),
         "/homepage": (context) => HomePage(currentUserID: myauth.currentUser.uid),
 
 

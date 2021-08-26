@@ -57,18 +57,6 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
 
-
-  Future<void> Analytics_SetCurrentScreen() async{
-    await widget.analytics.setCurrentScreen(screenName: "Login Screen", screenClassOverride: "loginscreen");
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    Analytics_SetCurrentScreen();
-
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

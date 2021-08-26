@@ -3,13 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "package:cs310/initial_routes/homepage.dart";
 
 
-void createUser(User myuser) {
-  usersRef.doc(myuser.uid.toString()).set(
+void createUserFirestore(User myuser, String username)async  {
+  await usersRef.doc(myuser.uid.toString()).set(
       {
         "userID": myuser.uid,
-        "username": myuser.displayName,
+        "username": username,
         "email": myuser.email,
-        "photoURL": myuser.photoURL,
+        "photoURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo4-U2alMPHVKZmVnO1THON7H6vUahxP23xw&usqp=CAU",
+        "backgroundImageURL": "https://cdn.wallpapersafari.com/27/32/jt4AoG.jpg",
         "bio": "This is my bio",
         "followings": 0,
         "followers": 0,
