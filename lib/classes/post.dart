@@ -4,13 +4,11 @@ import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/commentsScreen.dart';
 import 'package:cs310/pages/editPost_screen.dart';
-import 'package:cs310/pages/profile.dart';
 import 'package:cs310/pages/showLikers_Dislikers.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
-import 'package:photo_view/photo_view.dart';
 import "package:timeago/timeago.dart" as timeago;
 
 CachedNetworkImage cachedNetworkImage_custom(mediaURL) {

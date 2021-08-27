@@ -4,6 +4,7 @@ import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import "package:flutter/material.dart";
+import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Comment{
@@ -47,7 +48,7 @@ class Comment{
 
 
 
-Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildContext context){
+Widget ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildContext context){
 
   void showProfile(context)async{
     var doc = await usersRef.doc(mycomment.userID).get();
@@ -104,7 +105,7 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
                 },
                 child: Text(
                   'Remove',
-                  style: TextStyle(color: Colors.red),
+                  style: GoogleFonts.poppins(color: Colors.red),
                 ),
               ),
               SimpleDialogOption(
@@ -115,6 +116,74 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
           );
         });
   }
+  return Padding(
+    padding: const EdgeInsets.all(12.0),
+    child: Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child:  CircleAvatar(
+            radius: 22,
+            backgroundImage: CachedNetworkImageProvider(mycomment.avatarURL),
+          ),
+        ),
+        SizedBox(width: 12,),
+        Expanded(
+          flex: 10,
+
+          child: Container(
+            padding: EdgeInsets.fromLTRB(16,16,0,16),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                  color: Colors.grey.withOpacity(0.8),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(mycomment.username, style: GoogleFonts.poppins(fontWeight: FontWeight.bold),),
+                    outcoming_userID == mycomment.userID ? IconButton(
+                      icon: Icon(Icons.more_vert),
+                      onPressed: () {
+                        ShowOptions(context);
+                      },
+                    ) : Text(""),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 9,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(mycomment.text, style: GoogleFonts.poppins(),),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 15,),
+                    Expanded(
+                      flex: 2,
+                        child: Text(timeago.format(mycomment.time.toDate(), locale: 'en_short'), style: GoogleFonts.poppins(color: Colors.grey),)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 
   return Column(
     children: <Widget>[
@@ -123,27 +192,34 @@ Column ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
           child: Column (
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              GestureDetector(
-                child: Text(mycomment.username, style: TextStyle(fontWeight: FontWeight.bold),),
-                onTap: (){
-                  print("Tapped on username");
-                  showProfile(context);
-                  },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    child: Text(mycomment.username, style: GoogleFonts.poppins(fontWeight: FontWeight.bold),),
+                    onTap: (){
+                      print("Tapped on username");
+                      showProfile(context);
+                      },
+                  ),
+
+                ],
               ),
-              Text(mycomment.text),
+              Text(mycomment.text, style: GoogleFonts.poppins(),),
             ],
          ),
         ),
         leading: CircleAvatar(
           backgroundImage: CachedNetworkImageProvider(mycomment.avatarURL),
         ),
-        subtitle: Text(timeago.format(mycomment.time.toDate(), locale: 'en_short')),
         trailing: outcoming_userID == mycomment.userID ? IconButton(
           icon: Icon(Icons.more_vert),
           onPressed: () {
             ShowOptions(context);
           },
         ) : null,
+        subtitle: Text(timeago.format(mycomment.time.toDate(), locale: 'en_short'), style: GoogleFonts.poppins(color: Colors.grey),),
+
       ),
       Divider(thickness: 1,),
     ],

@@ -50,6 +50,7 @@ dependencies:
   email_validator: ^2.0.1
   google_fonts: ^2.1.0
   lite_rolling_switch: ^0.1.1
+  percent_indicator: "^2.1.7+2"
 
 dev_dependencies:
   flutter_test:
