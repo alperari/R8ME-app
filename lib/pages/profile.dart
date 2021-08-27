@@ -406,7 +406,7 @@ class _ProfileState extends State<Profile> {
 
       return GridView.count(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.70,
         mainAxisSpacing: 1.5,
         crossAxisSpacing: 1.5,
         shrinkWrap: true,

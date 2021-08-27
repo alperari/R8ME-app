@@ -9,6 +9,7 @@ import 'package:cs310/pages/showLikers_Dislikers.dart';
 import 'package:cs310/pages/targetProfile.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
+import 'package:google_fonts/google_fonts.dart';
 import 'package:photo_view/photo_view.dart';
 import "package:timeago/timeago.dart" as timeago;
 
@@ -232,7 +233,7 @@ class _PostState extends State<Post> {
         return Row(
           children: [
             Expanded(
-              flex: 10,
+              flex: 6,
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundImage: CachedNetworkImageProvider(ownerUser.photo_URL),
@@ -242,7 +243,7 @@ class _PostState extends State<Post> {
                   onTap: () => showProfile(context),
                   child: Text(
                     ownerUser.username,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -258,7 +259,7 @@ class _PostState extends State<Post> {
             ),
             Expanded(
               flex: 1,
-              child: Text(timeago.format(time.toDate(), locale: 'en_short')),
+              child: Text(timeago.format(time.toDate(), locale: 'en_short'), style: GoogleFonts.poppins(fontSize: 16),),
             ),
           ],
         );
@@ -272,14 +273,31 @@ class _PostState extends State<Post> {
         alignment: Alignment.center,
         children: <Widget>[
           Container(
-            height: 300,
-            child: FittedBox(
-               fit: BoxFit.cover,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.8),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: FittedBox(
+                fit: BoxFit.fitWidth,
                 child: CachedNetworkImage(
                   imageUrl: mediaURL,
 
                 ),
+              ),
             ),
+
+
+
           )
         ],
       ),
@@ -322,21 +340,20 @@ class _PostState extends State<Post> {
                 children: <Widget>[
                   Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.favorite_rounded),
-                        iconSize: 30,
-                        color: fillHeart ? Colors.red : Colors.grey[700],
-                        onPressed: (){
+                      GestureDetector(
+                        child: Icon(Icons.favorite_rounded,  size:30,color: fillHeart ? Colors.red : Colors.grey[600],),
+                        onTap: (){
                           print("tapped on like!");
                           Like();
                         },
                       ),
+
                       GestureDetector(
                         child: Text(
                           "$likeCount",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 30,
-                            color: Colors.black,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -355,7 +372,7 @@ class _PostState extends State<Post> {
                       IconButton(
                         icon: Icon(Icons.thumb_down_rounded),
                         iconSize: 30,
-                        color: fillThumb==true ? Colors.blueAccent : Colors.grey[700] ,
+                        color: fillThumb==true ? Colors.blueAccent : Colors.grey[600] ,
                         onPressed: (){
                           print("tapped on dislike!");
                           Dislike();
@@ -364,9 +381,9 @@ class _PostState extends State<Post> {
                       GestureDetector(
                         child: Text(
                           "$dislikeCount",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 30,
-                            color: Colors.black,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -385,7 +402,7 @@ class _PostState extends State<Post> {
                       IconButton(
                         icon: Icon(Icons.trending_up_rounded),
                         iconSize: 34,
-                        color: Colors.grey[700],
+                        color: Colors.grey[600],
                         onPressed: (){
                           print("tapped on dislike!");
                         },
@@ -393,9 +410,9 @@ class _PostState extends State<Post> {
                       Container(
                         child: Text(
                           num.parse((rate*100).toStringAsFixed(2)).toString(),
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 25,
-                            color: Colors.black,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -421,9 +438,9 @@ class _PostState extends State<Post> {
                       Container(
                         child: Text(
                           "${snapshot.data[1]}",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 30,
-                            color: Colors.black,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -440,13 +457,13 @@ class _PostState extends State<Post> {
                     margin: EdgeInsets.only(left: 20.0),
                     child: Text(
                       "$username  ",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  Expanded(child: Text(description))
+                  Expanded(child: Text(description, style: GoogleFonts.poppins(),))
                 ],
               ),
               SizedBox(height: 5,),
@@ -634,7 +651,7 @@ class _PostState extends State<Post> {
                 },
                 child: Text(
                   'Edit',
-                  style: TextStyle(color: Colors.blue),
+                  style: GoogleFonts.poppins(color: Colors.blue),
                 ),
               ),
               SimpleDialogOption(
@@ -645,7 +662,7 @@ class _PostState extends State<Post> {
                 },
                 child: Text(
                   'Remove',
-                  style: TextStyle(color: Colors.red),
+                  style: GoogleFonts.poppins(color: Colors.red),
                 ),
               ),
               SimpleDialogOption(
@@ -704,15 +721,18 @@ class _PostState extends State<Post> {
   Widget build(BuildContext context) {
     fillHeart = liked_users[currentUserOnPage.userID] == true;
     fillThumb = disliked_users[currentUserOnPage.userID] == true;
-    return Column(
-      children: <Widget>[
-        buildPostHeader(),
-        Divider(height: 5,),
-        buildPostImage(),
-        Divider(height: 5,),
-        buildPostFooter(),
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Column(
+        children: <Widget>[
+          buildPostHeader(),
+          Divider(height: 5,),
+          buildPostImage(),
+          Divider(height: 5,),
+          buildPostFooter(),
 
-      ],
+        ],
+      ),
     );
   }
 }
