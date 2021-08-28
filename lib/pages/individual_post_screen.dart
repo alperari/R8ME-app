@@ -35,8 +35,19 @@ class _Individual_Post_ScreenState extends State<Individual_Post_Screen> {
           child: Scaffold(
             appBar: AppBar(
               title: Text("View Post"),
-              backgroundColor: Colors.deepPurple,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[
+                          Colors.deepPurple[400],
+                          Colors.deepPurple[800]
+                        ])
+                ),
+              ),
             ),
+
             body: ListView(
               children: <Widget>[
                 Container(

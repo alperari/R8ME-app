@@ -2,6 +2,7 @@ import 'package:cs310/classes/customUser.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:flutter/material.dart';
 import "package:cs310/classes/comment.dart";
+import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
 
 class CommentsScreen extends StatefulWidget {
@@ -109,11 +110,21 @@ class _CommentsScreenState extends State<CommentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Comments",style: TextStyle(color: Colors.black),),
-        backgroundColor: Colors.deepOrangeAccent,
+        title: Text("Comments",style: GoogleFonts.poppins(color: Colors.white),),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Colors.deepPurple[400],
+                    Colors.deepPurple[800]
+                  ])
+          ),
+        ),
         centerTitle: true,
         iconTheme: IconThemeData(
-          color: Colors.black, //change your color here
+          color: Colors.white, //change your color here
         ),
       ),
       body: Column(

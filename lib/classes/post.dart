@@ -225,7 +225,15 @@ class _PostState extends State<Post> {
       future: usersRef.doc(ownerID).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return LinearProgressIndicator();
+          return Container(
+            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 12),
+            width: MediaQuery.of(context).size.width,
+            height: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.grey[400]
+            ),
+          );
         }
         customUser ownerUser = customUser.fromDocument(snapshot.data);
         return Row(
@@ -287,10 +295,8 @@ class _PostState extends State<Post> {
               borderRadius: BorderRadius.circular(20.0),
               child: FittedBox(
                 fit: BoxFit.fitWidth,
-                child: CachedNetworkImage(
-                  imageUrl: mediaURL,
+                child: cachedNetworkImage_custom(mediaURL),
 
-                ),
               ),
             ),
 
@@ -328,7 +334,15 @@ class _PostState extends State<Post> {
       future: Future.wait([checkComment(), countComment()]),
       builder: (context,snapshot){
         if(!snapshot.hasData){   //0=check  1=count
-          return LinearProgressIndicator();
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 8),
+            width: MediaQuery.of(context).size.width,
+            height: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.grey[400]
+            ),
+          );
         }
         else{
           return Column(
