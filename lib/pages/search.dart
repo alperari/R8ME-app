@@ -74,8 +74,11 @@ class _SearchState extends State<Search>
     return Scaffold(
       backgroundColor: Colors.white,
         appBar: AppBarTextField(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           flexibleSpace: Container(
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20) ),
                 gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -90,7 +93,7 @@ class _SearchState extends State<Search>
           style: GoogleFonts.poppins(color: Colors.orange, fontSize: 18),
           searchContainerColor: Colors.blue[800],
           cursorColor: Colors.white,
-          backBtnIcon: Icon(Icons.arrow_left_rounded,size: 40,color: Colors.white,),
+          backBtnIcon: Icon(Icons.arrow_left_sharp,size: 40,color: Colors.white,),
 
           centerTitle: true,
           title: Text("Contacts"),
