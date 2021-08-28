@@ -138,7 +138,7 @@ Widget ReturnCommentWidget(Comment mycomment, String outcoming_userID, BuildCont
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                  color: Colors.grey.withOpacity(0.8),
+                  color: Colors.grey.withOpacity(0.6),
                   spreadRadius: 5,
                   blurRadius: 7,
                   offset: Offset(0, 3), // changes position of shadow

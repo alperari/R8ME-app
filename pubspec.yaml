@@ -51,6 +51,7 @@ dependencies:
   google_fonts: ^2.1.0
   lite_rolling_switch: ^0.1.1
   percent_indicator: "^2.1.7+2"
+  appbar_textfield: ^1.0.1+1
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,15 @@
+import 'dart:async';
+
+import 'package:appbar_textfield/appbar_textfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/search_UserResult.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import "package:cs310/classes/customUser.dart";
 import "package:cs310/initial_routes/homepage.dart";
+import 'package:google_fonts/google_fonts.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -13,96 +18,52 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search>
     with AutomaticKeepAliveClientMixin<Search> {
-  TextEditingController searchController = TextEditingController();
-  Future<QuerySnapshot> searchResultsFuture;
 
-  handleSearch(String query) {
-    Future<QuerySnapshot> users = usersRef
-        .where('username', isGreaterThanOrEqualTo:query).where('username', isLessThanOrEqualTo:query+ '\uf8ff')
-        .get();
+  List<UserResult> allUsers = [];
+  bool loading = false;
+  StreamController<List<UserResult>> _contactStream = StreamController<List<UserResult>>();
+
+
+  bool get wantKeepAlive => true;
+
+
+  Future<void> loadAllUsers()async{
     setState(() {
-      searchResultsFuture = users;
+      loading = true;
+    });
+
+    QuerySnapshot UsersQuery = await usersRef.get();
+    for(DocumentSnapshot userDoc in UsersQuery.docs){
+      customUser corresponingUser = customUser.fromDocument(userDoc);
+      allUsers.add(UserResult(corresponingUser));
+    }
+    _contactStream.add(allUsers);
+
+    setState(() {
+      loading = false;
     });
   }
 
-  clearSearch() {
-    searchController.clear();
+  @override
+  void initState() {
+    // TODO: implement initState
+    loadAllUsers();
+    super.initState();
 
   }
 
-  AppBar buildSearchField() {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.white,
-      title: TextFormField(
-        controller: searchController,
-        decoration: InputDecoration(
+  void _onSearchChanged(String value) {
+    List<UserResult> foundContacts = allUsers
+        .where((UserResult myresult) =>
+    myresult.user.username.toLowerCase().indexOf(value.toLowerCase()) > -1)
+        .toList();
 
-          hintText: "Search for a user...",
-          filled: true,
-          prefixIcon: Icon(
-            Icons.account_box,
-            size: 28.0,
-          ),
-          suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: clearSearch,
-          ),
-        ),
-        onFieldSubmitted: handleSearch,
-      ),
-    );
+    this._contactStream.add(foundContacts);
   }
 
-  Container buildNoContent() {
-    final Orientation orientation = MediaQuery.of(context).orientation;
-    return Container(
-      child: Center(
-        child: ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            SvgPicture.asset(
-              'assets/search.svg',
-              height: orientation == Orientation.portrait ? 300.0 : 150.0,
-            ),
-            Text(
-              "Find Users",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w600,
-                fontSize: 60.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _onRestoreAllData() {
+    this._contactStream.add(this.allUsers);
   }
-
-  buildSearchResults() {
-    return FutureBuilder(
-        future: searchResultsFuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          List<UserResult> searchResults = [];
-          snapshot.data.docs.forEach((doc) {
-            customUser user = customUser.fromDocument(doc);
-            UserResult searchResult = UserResult(user);
-            searchResults.add(searchResult);
-          });
-          return ListView(
-            padding: EdgeInsets.all(5),
-            children: searchResults,
-          );
-
-        });
-  }
-
-  bool get wantKeepAlive => true;
 
 
 
@@ -110,13 +71,52 @@ class _SearchState extends State<Search>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print(searchController.text);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: buildSearchField(),
-      body:
-      searchResultsFuture == null || searchController.text == ""? buildNoContent() : buildSearchResults(),
+        appBar: AppBarTextField(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[
+                      Colors.blue[800],
+                      Colors.blue[400],
+
+                    ])
+            ),
+          ),
+          defaultHintText: "Search User...",
+          style: GoogleFonts.poppins(color: Colors.orange, fontSize: 18),
+          searchContainerColor: Colors.blue[800],
+          cursorColor: Colors.white,
+          backBtnIcon: Icon(Icons.arrow_left_rounded,size: 40,color: Colors.white,),
+
+          centerTitle: true,
+          title: Text("Contacts"),
+          onBackPressed: _onRestoreAllData,
+          onClearPressed: _onRestoreAllData,
+          onChanged: _onSearchChanged,
+        ),
+        body: loading ? Center(child: CircularProgressIndicator())
+            :
+        StreamBuilder<List<UserResult>>(
+            stream: _contactStream.stream,
+            builder: (context, snapshot) {
+              List<UserResult> contacts = snapshot.hasData ? snapshot.data : [];
+
+              return ListView(
+                  children: contacts
+              );
+
+            }
+        ),
     );
+  }
+
+  void dispose() {
+    _contactStream.close();
+    super.dispose();
   }
 }
 

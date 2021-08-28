@@ -20,6 +20,8 @@ class UserResult extends StatefulWidget {
 class _UserResultState extends State<UserResult> {
 
   bool iFollow = false;
+  bool processOn = false;
+
 
   void showProfile(context)async{
     var doc = await usersRef.doc(widget.user.userID).get();
@@ -105,82 +107,44 @@ class _UserResultState extends State<UserResult> {
 
   }
 
-
-
-  BoxDecoration FollowingDecoration = BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment.topRight,
-      end: Alignment.bottomLeft,
-      colors: [
-        Colors.deepPurple[400],
-        Colors.deepPurple,
-        Colors.deepPurple[600],
-        Colors.deepPurple[700],
-        Colors.deepPurple[800]
-      ],
-    ),
-    borderRadius: BorderRadius.circular(20),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(1),
-        spreadRadius: 5,
-        blurRadius: 10,
-        offset: Offset(0, 3), // changes position of shadow
+  Container buildProgressContainer(){
+    return Container(
+      width: 45,
+      height: 45,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.4),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 0), // changes position of shadow
+            ),
+          ]
       ),
-    ],
-  );
-
-  BoxDecoration notFollowingDecoration = BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment.topRight,
-      end: Alignment.bottomLeft,
-      colors: [
-        Colors.blue[500],
-        Colors.blue[600],
-        Colors.blue[800],
-        Colors.blue[900]
-      ],
-    ),
-    borderRadius: BorderRadius.circular(20),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(1),
-        spreadRadius: 5,
-        blurRadius: 10,
-        offset: Offset(0, 3), // changes position of shadow
-      ),
-    ],
-  );
-
-  BoxDecoration ownerDecoration = BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment.topRight,
-      end: Alignment.bottomLeft,
-      colors: [
-        Colors.orange[600],
-        Colors.orange[700],
-        Colors.orange[800],
-        Colors.orange[900]
-      ],
-    ),
-    borderRadius: BorderRadius.circular(20),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(1),
-        spreadRadius: 5,
-        blurRadius: 10,
-        offset: Offset(0, 3), // changes position of shadow
-      ),
-    ],
-  );
-
+      child:  CircularProgressIndicator(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 90,
       padding: EdgeInsets.all(8),
       margin: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      decoration: auth.currentUser.uid != widget.user.userID ? (iFollow ? FollowingDecoration : notFollowingDecoration) : ownerDecoration,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.6),
+            spreadRadius: 5,
+            blurRadius: 10,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
       child: Column(
         children: <Widget>[
           GestureDetector(
@@ -212,20 +176,27 @@ class _UserResultState extends State<UserResult> {
               title: Text(
                 widget.user.username,
                 style:
-                GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
+                GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
                 widget.user.bio,
                 overflow: TextOverflow.ellipsis,
-
-                style: GoogleFonts.poppins(color: Colors.white),
+                maxLines: 2,
+                style: GoogleFonts.poppins(color: Colors.black),
               ),
               trailing: widget.user.userID == auth.currentUser.uid ? null :
                   FutureBuilder(
                   future: checkFollowing(),
                   builder: (context,snapshot){
                     if(!snapshot.hasData){
-                      return CircularProgressIndicator();
+                      return Container(
+                        width: 45,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: Colors.grey[400]
+                        ),
+                      );
                     }
                     else{
                       if(snapshot.data == false && !iFollow){
@@ -233,27 +204,66 @@ class _UserResultState extends State<UserResult> {
                           child:Container(
                             width: 45,
                             height: 45,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.4),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(0, 0), // changes position of shadow
+                                  ),
+                                ]
+                            ),
                             child:  Icon(Icons.person_add,),
                           ),
 
                           onTap: () async{
+                            setState(() {
+                              processOn = true;
+                            });
 
                             await Follow();
+
+                            setState(() {
+                              processOn = false;
+                            });
                           },
                         );
                       }
+
                       else {
                         return GestureDetector(
                           child:Container(
                             width: 45,
                             height: 45,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.4),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(0, 0), // changes position of shadow
+                                  ),
+                                ]
+                            ),
                             child: Icon(Icons.person_remove),
                           ),
 
 
                           onTap: () async{
+                            setState(() {
+                              processOn = true;
+                            });
+
                             await Unfollow();
 
+                            setState(() {
+                              processOn = false;
+                            });
                           },
                         );
                       }
@@ -262,10 +272,6 @@ class _UserResultState extends State<UserResult> {
                   }
               )
             ),
-          ),
-          Divider(
-            height: 2.0,
-            color: Colors.white54,
           ),
         ],
       ),
