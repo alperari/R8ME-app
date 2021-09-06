@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart' as im;
 import 'package:uuid/uuid.dart';
 
@@ -13,6 +15,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
 
 
 class EditProfile extends StatefulWidget {
@@ -43,6 +46,30 @@ class _EditProfileState extends State<EditProfile> {
   File myfile;
   bool uploadingProgress = false;
   String profilePictureID = Uuid().v4();
+
+  String cropString(String source){
+    int last_n = source.lastIndexOf("\n");
+    if(last_n == -1){
+      return source;
+    }
+    else{
+      if(last_n != source.length-1){
+        return source;
+      }
+      else{
+
+        while(last_n == source.length-1){
+          print("source is now:   length: " + source.length.toString() + "    last_n: " + last_n.toString());
+          print(source);
+          source = source.substring(0,source.length-1);
+          last_n = source.lastIndexOf("\n");
+        }
+
+      }
+    }
+    return source;
+  }
+
 
   void showCustomDialog(BuildContext context) => showDialog(
       context: context,
@@ -251,7 +278,7 @@ class _EditProfileState extends State<EditProfile> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.green,
+            color: Colors.deepPurple,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -261,7 +288,7 @@ class _EditProfileState extends State<EditProfile> {
           IconButton(
             icon: Icon(
               Icons.settings,
-              color: Colors.green,
+              color: Colors.deepPurple,
             ),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -328,12 +355,12 @@ class _EditProfileState extends State<EditProfile> {
                                 width: 4,
                                 color: Theme.of(context).scaffoldBackgroundColor,
                               ),
-                              color: Colors.greenAccent,
+                              color: Colors.deepPurple,
                             ),
                             child: GestureDetector(
                               child: Icon(
                                 Icons.edit,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                               onTap: (){
                                 showCustomDialog(context);
@@ -351,6 +378,9 @@ class _EditProfileState extends State<EditProfile> {
 
 
                 TextFormField(
+
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 10,
                   controller: _bioController,
                   decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
@@ -369,98 +399,17 @@ class _EditProfileState extends State<EditProfile> {
                   validator: (String value) {
                     if(value.length < 3)
                       return "Bio too short!";
-                    else if(value.length > 75)
+                    else if(value.length > 200)
                       return "Bio too long!";
-                    newData["bio"] = value;
+
+                    newData["bio"] = cropString(value);
+
                     return null;
                   },
 
                 ),
                 SizedBox(height: 10,),
 
-                /*
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                      ),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    labelText: "New Password",
-                    hintStyle: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20),
-                  ),
-                  validator: (String value) {
-                    if (value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10,),
-                TextFormField(
-                  cursorColor: Colors.purple,
-                  controller: _passwordController2,
-                  obscureText: true,
-                  decoration: InputDecoration(
-
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                      ),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    labelText: "New Password Again",
-                    hintStyle: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20),
-                  ),
-                  validator: (String value) {
-                    if (value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    else if(_passwordController.text != _passwordController2.text)
-                    {
-                      return "Passwords do not match!";
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 15,),
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                        ),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      labelText: "New Bio",
-                      hintStyle: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15
-                      )
-                  ),
-
-                  validator: (String value) {
-                    if (value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    setState(() {
-                      //_username = value;
-                    });
-                    return null;
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                */
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -481,17 +430,17 @@ class _EditProfileState extends State<EditProfile> {
 
                         }
                       },
-                      color: Colors.greenAccent,
+                      color: Colors.deepPurple,
                       padding: EdgeInsets.symmetric(horizontal: 50),
-                      elevation: 2,
+                      elevation: 5,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       child: Text(
                         "SAVE",
-                        style: TextStyle(
-                            fontSize: 14,
+                        style: GoogleFonts.poppins(
+                            fontSize: 18,
                             letterSpacing: 2.2,
-                            color: Colors.black),
+                            color: Colors.white),
                       ),
                     )
                   ],

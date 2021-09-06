@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/post.dart';
 import 'package:cs310/classes/postTile.dart';
 import 'package:cs310/initial_routes/homepage.dart';
+import 'package:cs310/pages/edit_profile.dart';
 import 'package:cs310/pages/showFollowers_Followings.dart';
 import 'package:cs310/pages/showProfilePicture.dart';
 import 'package:flutter/cupertino.dart';
@@ -596,6 +597,13 @@ class _ProfileState extends State<Profile> {
         child: Icon(Icons.edit, color: Colors.grey[700],size: 30,),
 
       ),
+      onTap: (){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EditProfile(currentUser: widget.currentUser))
+        );
+      },
     );
   }
 

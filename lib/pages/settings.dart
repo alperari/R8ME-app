@@ -33,12 +33,19 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+
+        ],
         iconTheme: IconThemeData(
           color: Colors.black, //change your color here
         ),
         title: Text("Settings",
-        style: TextStyle(color: Colors.black),),
-        backgroundColor: Colors.greenAccent,
+            style: TextStyle(color: Colors.white),
+        ),
+        leading: BackButton(
+            color: Colors.white
+        ),
+        backgroundColor: Colors.deepPurple,
       ),
       body: Container(
         padding: EdgeInsets.only(left: 16, top: 25, right: 16),
