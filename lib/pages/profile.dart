@@ -104,20 +104,13 @@ class _ProfileState extends State<Profile> {
   }
 
   Container buildNoContent(){
-    final Orientation orientation = MediaQuery.of(context).orientation;
     return Container(
       child: Center(
-        child: ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            Image.asset(
-              'assets/nocontent.jpg',
-              fit: BoxFit.fill,
-            ),
-
-            SizedBox(height: 20,)
-          ],
+        child: Image.asset(
+          'assets/nocontent.jpg',
+          fit: BoxFit.fill,
         ),
+
       ),
     );
   }
@@ -341,7 +334,7 @@ class _ProfileState extends State<Profile> {
                         return Text((snapshot.data*100).toString(), style: GoogleFonts.poppins(color:Colors.white, fontWeight: FontWeight.bold,fontSize: 24
                         ),);
                       }
-                      return CircularProgressIndicator();
+                      return CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white));
                     },
                   ),
                 ],

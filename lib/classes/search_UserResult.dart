@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/customDialogBox.dart';
 import 'package:cs310/classes/customUser.dart';
@@ -123,7 +124,16 @@ class _UserResultState extends State<UserResult> {
             ),
           ]
       ),
-      child:  CircularProgressIndicator(),
+      child:  Center(
+        child: Container(
+          width: 35,
+          height: 35,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: CircularProgressIndicator(strokeWidth: 7,)
+        ),
+      ),
     );
   }
 
@@ -199,75 +209,80 @@ class _UserResultState extends State<UserResult> {
                       );
                     }
                     else{
-                      if(snapshot.data == false && !iFollow){
-                        return GestureDetector(
-                          child:Container(
-                            width: 45,
-                            height: 45,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.4),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: Offset(0, 0), // changes position of shadow
-                                  ),
-                                ]
+                      if(!processOn){
+                        if(snapshot.data == false){
+                          return GestureDetector(
+                            child:Container(
+                              width: 45,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.4),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 0), // changes position of shadow
+                                    ),
+                                  ]
+                              ),
+                              child:  Icon(Icons.person_add,),
                             ),
-                            child:  Icon(Icons.person_add,),
-                          ),
 
-                          onTap: () async{
-                            setState(() {
-                              processOn = true;
-                            });
+                            onTap: () async{
+                              setState(() {
+                                processOn = true;
+                              });
 
-                            await Follow();
+                              await Follow();
 
-                            setState(() {
-                              processOn = false;
-                            });
-                          },
-                        );
-                      }
+                              setState(() {
+                                processOn = false;
+                              });
+                            },
+                          );
+                        }
 
-                      else {
-                        return GestureDetector(
-                          child:Container(
-                            width: 45,
-                            height: 45,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.4),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: Offset(0, 0), // changes position of shadow
-                                  ),
-                                ]
+                        else {
+                          return GestureDetector(
+                            child:Container(
+                              width: 45,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.4),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 0), // changes position of shadow
+                                    ),
+                                  ]
+                              ),
+                              child: Icon(Icons.person_remove),
                             ),
-                            child: Icon(Icons.person_remove),
-                          ),
 
 
-                          onTap: () async{
-                            setState(() {
-                              processOn = true;
-                            });
+                            onTap: () async{
+                              setState(() {
+                                processOn = true;
+                              });
 
-                            await Unfollow();
+                              await Unfollow();
 
-                            setState(() {
-                              processOn = false;
-                            });
-                          },
-                        );
+                              setState(() {
+                                processOn = false;
+                              });
+                            },
+                          );
+                        }
+
                       }
-
+                      else{
+                        return buildProgressContainer();
+                      }
                     }
                   }
               )

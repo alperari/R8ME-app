@@ -89,14 +89,14 @@ class _SearchState extends State<Search>
                     ])
             ),
           ),
-          defaultHintText: "Search User...",
+          defaultHintText: "Search For a User...",
           style: GoogleFonts.poppins(color: Colors.orange, fontSize: 18),
           searchContainerColor: Colors.blue[800],
           cursorColor: Colors.white,
           backBtnIcon: Icon(Icons.arrow_left_sharp,size: 40,color: Colors.white,),
 
           centerTitle: true,
-          title: Text("Contacts"),
+          title: Text("All Users"),
           onBackPressed: _onRestoreAllData,
           onClearPressed: _onRestoreAllData,
           onChanged: _onSearchChanged,
