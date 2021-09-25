@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs310/classes/post.dart';
 import 'package:cs310/initial_routes/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
 
 class showProfilePicture extends StatelessWidget {
   final String currentUserID;
@@ -19,12 +18,8 @@ class showProfilePicture extends StatelessWidget {
           Container(
             height: MediaQuery.of(context).size.height-200,
             width:  MediaQuery.of(context).size.width,
-            child: PhotoView(
-              imageProvider: CachedNetworkImageProvider(
-                mediaURL,
-
-              ),
-              backgroundDecoration: BoxDecoration(color:Colors.white),
+            child: CachedNetworkImage(
+              imageUrl: mediaURL,
             ),
           )
         ],

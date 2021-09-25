@@ -56,7 +56,7 @@ class _UploadState extends State<Upload>
                     primary: Colors.purple[200]
                 ),
                 child: Text("Capture Photo",style: TextStyle(fontSize: 20,color: Colors.black),),
-                  onPressed: TakePhoto
+                  onPressed: (){}//TakePhoto
 
               ),
               ElevatedButton(
@@ -64,7 +64,7 @@ class _UploadState extends State<Upload>
                     primary: Colors.purple[200]
                 ),
                 child: Text("Select From Gallery",style: TextStyle(fontSize: 20,color: Colors.black)),
-                onPressed: ChooseGallery,
+                onPressed: (){}//ChooseGallery,
 
               ),
               Divider(height: 8,thickness: 3, color: Colors.black,),
@@ -86,27 +86,27 @@ class _UploadState extends State<Upload>
 
 
 
-   TakePhoto() async {
-    Navigator.pop(context);
-    File pickedFile = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 675,
-      maxWidth: 960,
-    );
-    setState(() {
-      myfile = pickedFile;
-    });
-   }
+   // TakePhoto() async {
+   //  Navigator.pop(context);
+   //  File pickedFile = await ImagePicker.pickImage(
+   //    source: ImageSource.camera,
+   //    maxHeight: 675,
+   //    maxWidth: 960,
+   //  );
+   //  setState(() {
+   //    myfile = pickedFile;
+   //  });
+   // }
 
-  ChooseGallery() async {
-    Navigator.pop(context);
-    File chosenFile = await ImagePicker.pickImage(
-        source: ImageSource.gallery
-    );
-    setState(() {
-      myfile = chosenFile;
-    });
-  }
+  // ChooseGallery() async {
+  //   Navigator.pop(context);
+  //   File chosenFile = await ImagePicker.pickImage(
+  //       source: ImageSource.gallery
+  //   );
+  //   setState(() {
+  //     myfile = chosenFile;
+  //   });
+  // }
 
 
 

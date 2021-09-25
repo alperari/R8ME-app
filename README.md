@@ -1,16 +1,39 @@
-# cs310
+# R8-ME
 
-A new Flutter application.
+A social media app where your posts can be either liked or disliked. 
 
-## Getting Started
+The ratio of like/(like+dislike) of your post will make up your post's rating.
 
-This project is a starting point for a Flutter application.
+The ratio of like/(like+dislike) of your all posts will make up your profile's rating.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The more you have rating, the more possible you will be recommended to others. 
+
+
+
+Firebase is used as backend solution and you need to change the billing plan from Spark to Blaze in order to make use of Firebase Functions.
+
+
+
+type into the console:
+
+```
+firebase login
+firebase deploy --only functions
+```
+
+
+
+Screenshots:
+
+<img src="https://user-images.githubusercontent.com/68128434/134784370-1307af34-6267-4342-bc02-993b3a5ebfb5.png" alt="Screenshot_1632599185" style="zoom:33%;" />
+<img src="https://user-images.githubusercontent.com/68128434/134784371-97d6fed0-d11d-47b4-88de-c0d943be65b9.png" alt="Screenshot_1632599191" style="zoom:33%;" />
+
+
+
+<img src="https://user-images.githubusercontent.com/68128434/134784396-e11e220f-5755-482f-a0d1-81443ac0920c.png" alt="Screenshot_1631206751" style="zoom:33%;" />
+
+<img src="https://user-images.githubusercontent.com/68128434/134784401-64094525-e91e-4d3d-ba8c-8205d7ec37c5.png" alt="Screenshot_1631206759" style="zoom:33%;" />
+
+<img src="https://user-images.githubusercontent.com/68128434/134784403-a28311d2-37b1-4849-a468-d27587a6f994.png" alt="Screenshot_1631206624" style="zoom:33%;" />
